@@ -6,7 +6,10 @@ export function registerTaskHandlers(getMainWindow: () => BrowserWindow | null) 
   ipcMain.handle('tasks:getAll', () => db.getTasks())
   ipcMain.handle('tasks:create', (_, task: Task) => {
     const result = db.createTask(task)
-    getMainWindow()?.webContents.send('tasks:changed')
+    // Pass the view the task landed in so the main window can navigate there.
+    // Inbox only shows tasks without due dates; dated tasks go to today/upcoming.
+    const view = task.dueDate ? 'today' : 'inbox'
+    getMainWindow()?.webContents.send('tasks:changed', view)
     return result
   })
   ipcMain.handle('tasks:update', (_, task: Task) => db.updateTask(task))

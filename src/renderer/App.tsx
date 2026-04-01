@@ -15,6 +15,7 @@ import NewProjectDialog from './components/NewProjectDialog'
 
 export default function App() {
   const loadTasks = useTaskStore(s => s.loadTasks)
+  const setActiveView = useTaskStore(s => s.setActiveView)
   const isDetailOpen = useTaskStore(s => s.isDetailOpen)
   const isCommandPaletteOpen = useTaskStore(s => s.isCommandPaletteOpen)
   const isShortcutCheatsheetOpen = useTaskStore(s => s.isShortcutCheatsheetOpen)
@@ -37,9 +38,14 @@ export default function App() {
     loadTasks()
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Refresh store when quick-add (or any other window) creates a task
+  // Refresh store when quick-add creates a task, then jump to the view it landed in
+  // (inbox = no due date, today = has due date) so it's immediately visible.
   useEffect(() => {
-    return window.api?.onTasksChanged?.(() => loadTasks())
+    return window.api?.onTasksChanged?.((view?: string) => {
+      loadTasks().then(() => {
+        if (view) setActiveView(view as Parameters<typeof setActiveView>[0])
+      })
+    })
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   return (

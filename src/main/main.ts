@@ -25,7 +25,13 @@ function restoreFrontmostApp() {
   if (process.platform !== 'darwin' || !previousActiveApp) return
   const appName = previousActiveApp
   previousActiveApp = null
-  execFile('osascript', ['-e', `tell application "${appName}" to activate`])
+  try {
+    // Must be synchronous AND called before hide() — macOS assigns focus to the
+    // next app-window the instant a window is hidden (window server level, before
+    // any JS runs). Activating the target app first means macOS has nowhere to
+    // reassign focus when quick-add disappears.
+    execFileSync('osascript', ['-e', `tell application "${appName}" to activate`])
+  } catch { /* ignore */ }
 }
 
 const VITE_DEV_SERVER_URL = process.env.VITE_DEV_SERVER_URL
@@ -136,12 +142,12 @@ function createQuickAddWindow() {
     quickAddWindow.loadURL('app://app/index.html#quickadd')
   }
 
-  // Hide on blur — debounce prevents a race where show()→focus() briefly blurs the window
+  // Hide on blur — debounce prevents a race where show()→focus() briefly blurs the window.
+  // Do NOT restore focus here: if the user clicked another app they've already chosen it.
   quickAddWindow.on('blur', () => {
     setTimeout(() => {
       if (quickAddWindow && !quickAddWindow.isFocused()) {
         quickAddWindow.hide()
-        restoreFrontmostApp()
       }
     }, 150)
   })
@@ -153,8 +159,8 @@ function createQuickAddWindow() {
 function showQuickAdd() {
   if (!quickAddWindow) createQuickAddWindow()
   if (quickAddWindow!.isVisible()) {
+    restoreFrontmostApp()   // activate previous app first, then hide
     quickAddWindow!.hide()
-    restoreFrontmostApp()
     return
   }
   const doShow = () => {
@@ -224,8 +230,8 @@ app.whenReady().then(() => {
 
   // ── IPC: renderer asks to dismiss the quick-add window ───────────────────
   ipcMain.handle('quickadd:dismiss', () => {
+    restoreFrontmostApp()   // activate previous app first, then hide
     quickAddWindow?.hide()
-    restoreFrontmostApp()
   })
   // ── IPC: renderer drives window height to match card content ─────────────
   ipcMain.handle('quickadd:resize', (_, height: number) => {

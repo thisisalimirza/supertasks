@@ -32,9 +32,10 @@ const api = {
     maximize: () => ipcRenderer.invoke('window:maximize'),
     close: () => ipcRenderer.invoke('window:close'),
   },
-  // Notified when a task is created from another window (e.g. quick-add)
-  onTasksChanged: (fn: () => void) => {
-    const handler = () => fn()
+  // Notified when a task is created from another window (e.g. quick-add).
+  // The optional `view` arg tells the main window which view to navigate to.
+  onTasksChanged: (fn: (view?: string) => void) => {
+    const handler = (_: unknown, view?: string) => fn(view)
     ipcRenderer.on('tasks:changed', handler)
     return () => ipcRenderer.removeListener('tasks:changed', handler)
   },
