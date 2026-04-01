@@ -1,0 +1,131 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Theme tokens ──────────────────────────────────────────────────────────── */
+/* Dark (default) */
+:root {
+  /* Backgrounds */
+  --c-bg:       #0A0A0A;
+  --c-panel:    #0D0D0D;
+  --c-surface:  #111111;
+  --c-elevated: #161616;
+  --c-hover:    #0F0F0F;
+  --c-sel:      #161620;
+  --c-creator:  #0E0E16;
+  --c-btn:      #1A1A1A;
+  --c-btn-h:    #222222;
+  --c-cmd-row:  #141414;
+
+  /* Borders */
+  --c-b0: #111111;   /* row separator */
+  --c-b1: #1A1A1A;   /* inner borders  */
+  --c-b2: #1F1F1F;   /* standard       */
+  --c-b3: #2A2A2A;   /* kbd / stronger */
+
+  /* Text */
+  --c-t1: #F5F5F5;   /* primary        */
+  --c-t2: #E0E0E0;   /* rich body      */
+  --c-t3: #C0C0C0;   /* notes          */
+  --c-t4: #888888;   /* hint           */
+  --c-t5: #666666;   /* muted          */
+  --c-t6: #555555;   /* faint          */
+  --c-t7: #444444;   /* placeholder    */
+  --c-t8: #333333;   /* near-invisible */
+
+  /* Scrollbar */
+  --c-scroll: #1F1F1F;
+  --c-scroll-h: #333333;
+
+  /* Semantic */
+  --c-accent:   #5B6AFF;
+  --c-success:  #1DB954;
+  --c-warn:     #FFB800;
+  --c-danger:   #FF4444;
+}
+
+/* Light (Superhuman-inspired) */
+:root[data-theme="light"] {
+  /* Backgrounds */
+  --c-bg:       #FAFAF8;
+  --c-panel:    #F5F5F3;
+  --c-surface:  #EFEFED;
+  --c-elevated: #E8E8E6;
+  --c-hover:    #F2F2F0;
+  --c-sel:      #ECEEFF;
+  --c-creator:  #F0F1FF;
+  --c-btn:      #E5E5E3;
+  --c-btn-h:    #DADADD;
+  --c-cmd-row:  #F2F2F0;
+
+  /* Borders */
+  --c-b0: #EBEBEB;
+  --c-b1: #E5E5E5;
+  --c-b2: #DADADD;
+  --c-b3: #CCCCCC;
+
+  /* Text */
+  --c-t1: #1A1A1A;
+  --c-t2: #2A2A2A;
+  --c-t3: #3D3D3D;
+  --c-t4: #666666;
+  --c-t5: #777777;
+  --c-t6: #888888;
+  --c-t7: #999999;
+  --c-t8: #AAAAAA;
+
+  /* Scrollbar */
+  --c-scroll: #DADADD;
+  --c-scroll-h: #CCCCCC;
+
+  /* Semantic */
+  --c-accent:   #5B6AFF;
+  --c-success:  #18A048;
+  --c-warn:     #C08000;
+  --c-danger:   #D93333;
+}
+
+/* ── Base styles ───────────────────────────────────────────────────────────── */
+@layer base {
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  html, body, #root {
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    background: var(--c-bg);
+    color: var(--c-t1);
+    font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'SF Pro Display', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    user-select: none;
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--c-scroll); border-radius: 2px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--c-scroll-h); }
+}
+
+/* ── Utilities ─────────────────────────────────────────────────────────────── */
+@layer utilities {
+  .drag-region {
+    -webkit-app-region: drag;
+  }
+  .no-drag {
+    -webkit-app-region: no-drag;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
