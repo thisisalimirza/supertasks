@@ -42,7 +42,7 @@
     "appId": "com.supertasks.app",
     "productName": "Supertasks",
     "copyright": "Copyright © 2026 Ali Mirza",
-    "artifactName": "${productName}-${version}-${arch}.${ext}",
+    "artifactName": "${productName}-${arch}.${ext}",
     "directories": {
       "output": "release"
     },
