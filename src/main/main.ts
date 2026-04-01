@@ -1,7 +1,7 @@
 import { app, BrowserWindow, shell, globalShortcut, ipcMain, session, protocol } from 'electron'
 import fs from 'fs'
 import path from 'path'
-import { execFile } from 'child_process'
+import { execFile, execFileSync } from 'child_process'
 import { initDatabase, db } from './database'
 import { registerTaskHandlers } from './handlers/taskHandlers'
 import { registerWindowHandlers } from './handlers/windowHandlers'
@@ -13,9 +13,12 @@ let previousActiveApp: string | null = null
 
 function captureFrontmostApp() {
   if (process.platform !== 'darwin') return
-  execFile('osascript', ['-e', 'name of (path to frontmost application)'], (err, stdout) => {
-    if (!err) previousActiveApp = stdout.trim()
-  })
+  try {
+    // Must be synchronous — async capture races with show()/focus() and ends
+    // up recording "SuperTasks" as the frontmost app instead of the real one.
+    previousActiveApp = execFileSync('osascript', ['-e', 'name of (path to frontmost application)'])
+      .toString().trim()
+  } catch { /* ignore */ }
 }
 
 function restoreFrontmostApp() {
