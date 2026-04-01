@@ -1,4 +1,4 @@
-import { app, BrowserWindow, shell, globalShortcut, ipcMain, session } from 'electron'
+import { app, BrowserWindow, shell, globalShortcut, ipcMain, session, protocol, net } from 'electron'
 import path from 'path'
 import { execFile } from 'child_process'
 import { initDatabase, db } from './database'
@@ -25,6 +25,17 @@ function restoreFrontmostApp() {
 }
 
 const VITE_DEV_SERVER_URL = process.env.VITE_DEV_SERVER_URL
+
+// Register a privileged custom scheme for the renderer in production.
+// file:// + asar has a broken origin model (each file is its own unique origin)
+// which makes CSP `'self'` block assets. A named scheme gets a real stable
+// origin (app://app) that behaves like HTTP, so `'self'` works correctly and
+// Electron's patched `net` module still reads files from inside the asar.
+if (!VITE_DEV_SERVER_URL) {
+  protocol.registerSchemesAsPrivileged([
+    { scheme: 'app', privileges: { secure: true, standard: true, supportFetchAPI: true } },
+  ])
+}
 
 function createWindow() {
   const savedState = db.getWindowState()
@@ -57,7 +68,7 @@ function createWindow() {
   if (VITE_DEV_SERVER_URL) {
     mainWindow.loadURL(VITE_DEV_SERVER_URL)
   } else {
-    mainWindow.loadFile(path.join(__dirname, '../renderer/index.html'))
+    mainWindow.loadURL('app://app/index.html')
   }
 
   // Intercept Escape at the browser process level and forward to renderer
@@ -118,7 +129,7 @@ function createQuickAddWindow() {
   if (VITE_DEV_SERVER_URL) {
     quickAddWindow.loadURL(`${VITE_DEV_SERVER_URL}#quickadd`)
   } else {
-    quickAddWindow.loadFile(path.join(__dirname, '../renderer/index.html'), { hash: 'quickadd' })
+    quickAddWindow.loadURL('app://app/index.html#quickadd')
   }
 
   // Hide on blur — debounce prevents a race where show()→focus() briefly blurs the window
@@ -156,6 +167,17 @@ function showQuickAdd() {
 }
 
 app.whenReady().then(() => {
+  // ── Custom app:// protocol — serves renderer files from inside the asar ───
+  // net.fetch with file:// is asar-aware in Electron 25+, giving us a real
+  // HTTP-like origin (app://app) so CSP `'self'` works correctly.
+  if (!VITE_DEV_SERVER_URL) {
+    protocol.handle('app', (request) => {
+      const { pathname } = new URL(request.url)
+      const filePath = path.join(__dirname, '..', 'renderer', pathname)
+      return net.fetch(`file://${filePath}`)
+    })
+  }
+
   // ── Allow external image sources (e.g. picsum.photos for InboxZeroScreen) ─
   session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
     callback({
