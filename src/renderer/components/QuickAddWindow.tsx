@@ -43,10 +43,11 @@ export default function QuickAddWindow() {
   const projInputRef = useRef<HTMLInputElement>(null)
   const cardRef = useRef<HTMLDivElement>(null)
 
-  // Sync theme with main window
+  // Sync theme with main window + signal main process that React has mounted
   useEffect(() => {
     const theme = localStorage.getItem('supertasks-theme') ?? 'light'
     document.documentElement.setAttribute('data-theme', theme)
+    window.api?.quickAdd?.signalReady?.()
   }, [])
 
   // ResizeObserver: window height tracks card height automatically
@@ -70,7 +71,10 @@ export default function QuickAddWindow() {
     } catch {}
   }
 
-  // On window focus: reset everything, focus input, refresh project list
+  // On window show: reset everything, focus input, refresh project list.
+  // Uses the explicit IPC signal sent by main after show()+focus() — more reliable
+  // than the native 'focus' window event, which can fire before this listener is
+  // registered (first ever show) or get swallowed during macOS space transitions.
   useEffect(() => {
     const handleFocus = () => {
       setValue('')
@@ -82,8 +86,13 @@ export default function QuickAddWindow() {
       inputRef.current?.focus()
       loadProjects()
     }
+    const unsub = window.api?.quickAdd?.onFocus?.(handleFocus)
+    // Native focus as fallback (e.g. user clicks window after blur)
     window.addEventListener('focus', handleFocus)
-    return () => window.removeEventListener('focus', handleFocus)
+    return () => {
+      unsub?.()
+      window.removeEventListener('focus', handleFocus)
+    }
   }, [])
 
   const openPicker = (p: ActivePicker) => {
@@ -109,26 +118,27 @@ export default function QuickAddWindow() {
 
   const commit = async () => {
     const title = value.trim()
-    if (title) {
-      const task: Task = {
-        id: nanoid(),
-        title,
-        notes: '',
-        status: 'inbox',
-        priority: 'none',
-        dueDate,
-        startDate,
-        reminder: null,
-        project: project || '',
-        labels: [],
-        createdAt: new Date().toISOString(),
-        completedAt: null,
-        starred: false,
-        sortOrder: Date.now(),
-      }
-      await window.api.tasks.create(task)
-    }
-    dismiss()
+    const task: Task | null = title ? {
+      id: nanoid(),
+      title,
+      notes: '',
+      status: 'inbox',
+      priority: 'none',
+      dueDate,
+      startDate,
+      reminder: null,
+      project: project || '',
+      labels: [],
+      createdAt: new Date().toISOString(),
+      completedAt: null,
+      starred: false,
+      sortOrder: Date.now(),
+    } : null
+    // Single IPC: persist task + restore focus to previous app + hide window.
+    // If we called tasks.create then dismiss separately, the tasks:changed IPC
+    // to the main window would race restoreFrontmostApp(), causing focus to
+    // land on the SuperTasks main window instead of the user's previous app.
+    await window.api.quickAdd.submit(task)
   }
 
   const filteredProjects = projQuery.trim()

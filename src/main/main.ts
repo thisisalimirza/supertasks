@@ -1,4 +1,4 @@
-import { app, BrowserWindow, shell, globalShortcut, ipcMain, session, protocol } from 'electron'
+import { app, BrowserWindow, shell, globalShortcut, ipcMain, session, protocol, Menu } from 'electron'
 import fs from 'fs'
 import path from 'path'
 import { execFile, execFileSync } from 'child_process'
@@ -14,10 +14,12 @@ let previousActiveApp: string | null = null
 function captureFrontmostApp() {
   if (process.platform !== 'darwin') return
   try {
-    // Must be synchronous — async capture races with show()/focus() and ends
-    // up recording "SuperTasks" as the frontmost app instead of the real one.
-    previousActiveApp = execFileSync('osascript', ['-e', 'name of (path to frontmost application)'])
-      .toString().trim()
+    // System Events process query works for every app regardless of bundle path,
+    // unlike `name of (path to frontmost application)` which fails for sandboxed
+    // or non-standard apps (e.g. Claude, some Electron apps).
+    previousActiveApp = execFileSync('osascript', [
+      '-e', 'tell application "System Events" to get name of first application process whose frontmost is true',
+    ]).toString().trim()
   } catch { /* ignore */ }
 }
 
@@ -30,7 +32,11 @@ function restoreFrontmostApp() {
     // next app-window the instant a window is hidden (window server level, before
     // any JS runs). Activating the target app first means macOS has nowhere to
     // reassign focus when quick-add disappears.
-    execFileSync('osascript', ['-e', `tell application "${appName}" to activate`])
+    // Use System Events process activation — works even when `tell application`
+    // fails (e.g. apps whose bundle name differs from their process name).
+    execFileSync('osascript', [
+      '-e', `tell application "System Events" to set frontmost of application process "${appName}" to true`,
+    ])
   } catch { /* ignore */ }
 }
 
@@ -133,8 +139,9 @@ function createQuickAddWindow() {
     app.dock?.setIcon(path.join(__dirname, '../../assets/icon.png'))
   }
 
-  // Set ready flag after first paint — React is guaranteed to be mounted at this point
-  quickAddWindow.once('ready-to-show', () => { quickAddReady = true })
+  // Reset ready whenever the renderer reloads (GPU crash recovery, HMR full reload, etc.)
+  // quickAddReady is set back to true by the 'quickadd:ready' IPC sent from React on mount.
+  quickAddWindow.webContents.on('did-start-loading', () => { quickAddReady = false })
 
   if (VITE_DEV_SERVER_URL) {
     quickAddWindow.loadURL(`${VITE_DEV_SERVER_URL}#quickadd`)
@@ -168,12 +175,92 @@ function showQuickAdd() {
     quickAddWindow!.center()
     quickAddWindow!.show()
     quickAddWindow!.focus()
+    // Explicitly tell the renderer to reset + focus the input.
+    // More reliable than the native window 'focus' event, which can fire
+    // before the listener is registered (first show) or be swallowed by
+    // macOS when focus is transferred between spaces/apps.
+    try { quickAddWindow!.webContents.send('quickadd:focus') } catch { /* renderer not ready */ }
   }
   if (quickAddReady) {
     doShow()
   } else {
     quickAddWindow!.once('ready-to-show', () => { quickAddReady = true; doShow() })
   }
+}
+
+function buildAppMenu() {
+  const isMac = process.platform === 'darwin'
+
+  const template: Electron.MenuItemConstructorOptions[] = [
+    // macOS app menu (first menu = app name in menu bar)
+    ...(isMac ? [{
+      label: app.name,
+      submenu: [
+        {
+          label: `About ${app.name}`,
+          click: () => app.showAboutPanel(),
+        },
+        { type: 'separator' as const },
+        { role: 'services' as const },
+        { type: 'separator' as const },
+        { role: 'hide' as const },
+        { role: 'hideOthers' as const },
+        { role: 'unhide' as const },
+        { type: 'separator' as const },
+        { role: 'quit' as const },
+      ],
+    }] : []),
+    // Edit menu — enables system cut/copy/paste/undo in all text inputs
+    {
+      label: 'Edit',
+      submenu: [
+        { role: 'undo' as const },
+        { role: 'redo' as const },
+        { type: 'separator' as const },
+        { role: 'cut' as const },
+        { role: 'copy' as const },
+        { role: 'paste' as const },
+        { role: 'selectAll' as const },
+      ],
+    },
+    // Window menu
+    {
+      label: 'Window',
+      submenu: [
+        { role: 'minimize' as const },
+        { role: 'zoom' as const },
+        ...(isMac ? [
+          { type: 'separator' as const },
+          { role: 'front' as const },
+        ] : [
+          { role: 'close' as const },
+        ]),
+      ],
+    },
+    // Help menu
+    {
+      role: 'help' as const,
+      submenu: [
+        {
+          label: 'Keyboard Shortcuts',
+          accelerator: 'CmdOrCtrl+/',
+          click: () => mainWindow?.webContents.send('menu:shortcuts'),
+        },
+      ],
+    },
+  ]
+
+  Menu.setApplicationMenu(Menu.buildFromTemplate(template))
+}
+
+function configureAboutPanel() {
+  app.setAboutPanelOptions({
+    applicationName: 'Supertasks',
+    applicationVersion: app.getVersion(),
+    version: app.getVersion(),
+    copyright: 'Copyright © 2026 Ali Mirza',
+    iconPath: path.join(__dirname, '../../assets/icon.png'),
+  })
 }
 
 app.whenReady().then(() => {
@@ -213,11 +300,14 @@ app.whenReady().then(() => {
       responseHeaders: {
         ...details.responseHeaders,
         'Content-Security-Policy': [
-          "default-src 'self' 'unsafe-inline' data: blob:; img-src 'self' data: blob: https: http:; connect-src 'self' ws: wss: https:; script-src 'self' 'unsafe-inline' 'unsafe-eval';"
+          "default-src 'self' 'unsafe-inline' data: blob:; img-src 'self' data: blob: https: http:; connect-src 'self' ws: wss: https:; script-src 'self' 'unsafe-inline';"
         ],
       },
     })
   })
+
+  buildAppMenu()
+  configureAboutPanel()
 
   initDatabase()
   createWindow()
@@ -228,6 +318,21 @@ app.whenReady().then(() => {
   // ── Global shortcut: Option+Space ────────────────────────────────────────
   globalShortcut.register('Alt+Space', showQuickAdd)
 
+  // ── IPC: renderer signals it has mounted and is ready to receive events ──
+  ipcMain.handle('quickadd:ready', () => { quickAddReady = true })
+
+  // ── IPC: submit task (optional) + restore focus + hide ───────────────────
+  // Combining create + dismiss in one handler guarantees restoreFrontmostApp()
+  // runs after the task is written, not racing a separate tasks:create call.
+  ipcMain.handle('quickadd:submit', (_, task) => {
+    if (task) {
+      db.createTask(task)
+      const view = task.dueDate ? 'today' : 'inbox'
+      mainWindow?.webContents.send('tasks:changed', view)
+    }
+    restoreFrontmostApp()   // activate previous app first, then hide
+    quickAddWindow?.hide()
+  })
   // ── IPC: renderer asks to dismiss the quick-add window ───────────────────
   ipcMain.handle('quickadd:dismiss', () => {
     restoreFrontmostApp()   // activate previous app first, then hide
@@ -237,6 +342,14 @@ app.whenReady().then(() => {
   ipcMain.handle('quickadd:resize', (_, height: number) => {
     quickAddWindow?.setSize(620, Math.round(height))
   })
+
+  // ── Auto-updater (production only) ───────────────────────────────────────
+  // Only run in packaged builds; dev mode has no update server to talk to.
+  if (app.isPackaged) {
+    import('electron-updater').then(({ autoUpdater }) => {
+      autoUpdater.checkForUpdatesAndNotify()
+    }).catch(() => { /* ignore — update server may not be configured yet */ })
+  }
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().filter(w => w !== quickAddWindow).length === 0) createWindow()

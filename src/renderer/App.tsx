@@ -15,7 +15,7 @@ import NewProjectDialog from './components/NewProjectDialog'
 
 export default function App() {
   const loadTasks = useTaskStore(s => s.loadTasks)
-  const setActiveView = useTaskStore(s => s.setActiveView)
+  const setActiveView = useTaskStore(s => s.setView)
   const isDetailOpen = useTaskStore(s => s.isDetailOpen)
   const isCommandPaletteOpen = useTaskStore(s => s.isCommandPaletteOpen)
   const isShortcutCheatsheetOpen = useTaskStore(s => s.isShortcutCheatsheetOpen)
@@ -45,6 +45,13 @@ export default function App() {
       loadTasks().then(() => {
         if (view) setActiveView(view as Parameters<typeof setActiveView>[0])
       })
+    })
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Native Help menu → open shortcut cheatsheet
+  useEffect(() => {
+    return window.api?.onMenuShortcuts?.(() => {
+      useTaskStore.getState().setShortcutCheatsheetOpen(true)
     })
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 

@@ -46,8 +46,20 @@ const api = {
     return () => { escapeListeners = escapeListeners.filter(f => f !== fn) }
   },
 
+  // Native menu → renderer bridge
+  onMenuShortcuts: (fn: () => void) => {
+    const handler = () => fn()
+    ipcRenderer.on('menu:shortcuts', handler)
+    return () => ipcRenderer.removeListener('menu:shortcuts', handler)
+  },
+
   // Quick-add window API
   quickAdd: {
+    signalReady: () => ipcRenderer.invoke('quickadd:ready'),
+    // submit: create task (if any) + restore focus + hide — all in one IPC so
+    // restoreFrontmostApp() is guaranteed to run after the task is persisted,
+    // not racing against a separate tasks:create call.
+    submit: (task: Task | null) => ipcRenderer.invoke('quickadd:submit', task),
     dismiss: () => ipcRenderer.invoke('quickadd:dismiss'),
     resize: (height: number) => ipcRenderer.invoke('quickadd:resize', height),
     onFocus: (fn: () => void) => {

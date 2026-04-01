@@ -28,9 +28,14 @@ declare global {
         maximize: () => void
         close: () => void
       }
+      onTasksChanged: (fn: (view?: string) => void) => () => void
       onEscape: (fn: () => void) => () => void
+      onMenuShortcuts: (fn: () => void) => () => void
       quickAdd: {
+        signalReady: () => Promise<void>
+        submit: (task: Task | null) => Promise<void>
         dismiss: () => Promise<void>
+        resize: (height: number) => Promise<void>
         onFocus: (fn: () => void) => () => void
       }
     }

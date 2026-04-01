@@ -29,6 +29,7 @@
   },
   "dependencies": {
     "date-fns": "^3.3.0",
+    "electron-updater": "^6.8.3",
     "framer-motion": "^11.0.3",
     "fuse.js": "^7.0.0",
     "react": "^18.2.0",
@@ -37,8 +38,9 @@
   },
   "build": {
     "appId": "com.supertasks.app",
-    "productName": "SuperTasks",
+    "productName": "Supertasks",
     "copyright": "Copyright © 2026 Ali Mirza",
+    "artifactName": "${productName}-${version}-${arch}.${ext}",
     "directories": {
       "output": "release"
     },
@@ -50,21 +52,32 @@
     "mac": {
       "icon": "assets/icon.icns",
       "category": "public.app-category.productivity",
+      "hardenedRuntime": true,
+      "gatekeeperAssess": false,
+      "entitlements": "build/entitlements.mac.plist",
+      "entitlementsInherit": "build/entitlements.mac.plist",
       "target": [
         {
           "target": "dmg",
-          "arch": ["arm64"]
+          "arch": [
+            "arm64",
+            "x64"
+          ]
         }
       ]
     },
     "dmg": {
-      "title": "SuperTasks",
+      "title": "Supertasks",
       "icon": "assets/icon.icns",
       "background": null,
       "window": {
         "width": 540,
         "height": 380
       }
+    },
+    "publish": {
+      "provider": "github",
+      "releaseType": "release"
     }
   }
 }
