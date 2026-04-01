@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SuperTasks — Fly through your work. Free forever.</title>
+  <meta name="description" content="SuperTasks is a free, keyboard-first task manager for Mac. No subscription, no account, no cloud. Your tasks live in local SQLite. Free forever." />
+  <meta name="theme-color" content="#080c18" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #0A0A0A; --bg2: #0D0D0D; --surface: #111111;
+      --border: rgba(255,255,255,0.06); --border2: rgba(255,255,255,0.10);
+      --coral: #5B6AFF; --coral-d: #4a57e8; --coral-glow: rgba(91,106,255,0.18);
+      --t1: #F5F5F5; --t2: rgba(245,245,245,0.72); --t3: rgba(245,245,245,0.44); --t4: rgba(245,245,245,0.24);
+      --green: #1DB954; --font: 'Sora', system-ui, sans-serif; --mono: 'JetBrains Mono', 'SF Mono', monospace;
+    }
+    html { scroll-behavior: smooth; }
+    body { font-family: var(--font); background: var(--bg); color: var(--t1); overflow-x: hidden; -webkit-font-smoothing: antialiased; }
+    a { color: inherit; text-decoration: none; }
+    img { display: block; width: 100%; }
+
+    /* ── Reveal ──────────────────────────────────────────────────────────── */
+    .r { opacity: 0; transform: translateY(28px); transition: opacity 0.7s cubic-bezier(0.16,1,0.3,1), transform 0.7s cubic-bezier(0.16,1,0.3,1); }
+    .r.in { opacity: 1; transform: none; }
+    .d1 { transition-delay: 0.1s; } .d2 { transition-delay: 0.2s; } .d3 { transition-delay: 0.3s; }
+    .d4 { transition-delay: 0.4s; } .d5 { transition-delay: 0.5s; }
+
+    /* ── Nav ─────────────────────────────────────────────────────────────── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+      height: 64px; display: flex; align-items: center; justify-content: space-between;
+      padding: 0 48px; transition: background 0.3s;
+    }
+    nav.scrolled { background: rgba(10,10,10,0.92); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); }
+    .nav-brand { display: flex; align-items: center; gap: 10px; font-size: 15px; font-weight: 700; letter-spacing: -0.02em; }
+    .nav-icon {
+      width: 28px; height: 28px; border-radius: 8px;
+      background: linear-gradient(135deg, #5B47E0, #8B5CF6);
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .nav-links { list-style: none; display: flex; align-items: center; gap: 32px; position: absolute; left: 50%; transform: translateX(-50%); }
+    .nav-links a { font-size: 13px; font-weight: 500; color: var(--t3); transition: color 0.2s; letter-spacing: 0.01em; }
+    .nav-links a:hover { color: var(--t1); }
+    .nav-cta { font-size: 13px; font-weight: 600; color: #fff; background: var(--coral); padding: 9px 20px; border-radius: 8px; transition: background 0.2s, transform 0.15s, box-shadow 0.2s; box-shadow: 0 0 24px var(--coral-glow); }
+    .nav-cta:hover { background: var(--coral-d); transform: translateY(-1px); box-shadow: 0 4px 32px rgba(91,106,255,0.32); }
+
+    /* ── Hero ────────────────────────────────────────────────────────────── */
+    #hero {
+      min-height: 100vh; display: flex; flex-direction: column; align-items: center;
+      justify-content: center; padding: 140px 48px 100px; text-align: center;
+      position: relative; overflow: hidden;
+    }
+    #hero::before {
+      content: ''; position: absolute; top: -200px; left: 50%; transform: translateX(-50%);
+      width: 1000px; height: 700px;
+      background: radial-gradient(ellipse at center top, rgba(91,106,255,0.10) 0%, rgba(91,106,255,0.04) 35%, transparent 70%);
+      pointer-events: none;
+    }
+    #hero::after {
+      content: ''; position: absolute; inset: 0;
+      background-image: linear-gradient(rgba(255,255,255,0.018) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.018) 1px, transparent 1px);
+      background-size: 72px 72px; pointer-events: none;
+      mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, black 30%, transparent 100%);
+    }
+    #hero > * { position: relative; z-index: 1; }
+
+    .hero-eyebrow { display: inline-flex; align-items: center; gap: 10px; font-family: var(--mono); font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--coral); margin-bottom: 28px; }
+    .hero-eyebrow-line { width: 24px; height: 1px; background: var(--coral); opacity: 0.6; }
+
+    .hero-h1 { font-size: clamp(48px, 6.5vw, 92px); font-weight: 800; letter-spacing: -0.04em; line-height: 1.0; margin-bottom: 26px; max-width: 900px; }
+    .hero-h1 .accent { color: var(--coral); }
+
+    .hero-sub { font-size: clamp(15px, 1.8vw, 18px); color: var(--t3); line-height: 1.65; max-width: 480px; margin-bottom: 44px; font-weight: 400; }
+
+    .hero-actions { display: flex; align-items: center; gap: 16px; margin-bottom: 20px; }
+    .btn-primary { display: inline-flex; align-items: center; gap: 10px; font-size: 15px; font-weight: 700; color: #fff; background: var(--coral); padding: 15px 30px; border-radius: 10px; box-shadow: 0 0 40px rgba(91,106,255,0.28); transition: transform 0.15s, box-shadow 0.15s, background 0.15s; letter-spacing: -0.01em; }
+    .btn-primary:hover { background: var(--coral-d); transform: translateY(-2px); box-shadow: 0 8px 48px rgba(91,106,255,0.4); }
+    .btn-secondary { font-size: 14px; font-weight: 500; color: var(--t3); transition: color 0.2s; display: flex; align-items: center; gap: 6px; }
+    .btn-secondary:hover { color: var(--t1); }
+
+    .hero-trust { font-family: var(--mono); font-size: 10px; color: var(--t4); letter-spacing: 0.1em; text-transform: uppercase; display: flex; align-items: center; gap: 16px; margin-bottom: 72px; flex-wrap: wrap; justify-content: center; }
+    .hero-trust-dot { width: 2px; height: 2px; border-radius: 50%; background: var(--t4); }
+
+    .hero-screenshot { width: 100%; max-width: 960px; border-radius: 14px; overflow: hidden; border: 1px solid var(--border2); box-shadow: 0 0 0 1px rgba(255,255,255,0.04), 0 40px 120px rgba(0,0,0,0.7), 0 0 80px rgba(91,106,255,0.06); transition: transform 0.4s cubic-bezier(0.16,1,0.3,1), box-shadow 0.4s; }
+    .hero-screenshot:hover { transform: translateY(-4px) scale(1.002); box-shadow: 0 0 0 1px rgba(255,255,255,0.06), 0 60px 140px rgba(0,0,0,0.7), 0 0 100px rgba(91,106,255,0.10); }
+
+    /* ── Stat break ──────────────────────────────────────────────────────── */
+    .stat-break { padding: 120px 48px; text-align: center; background: var(--bg2); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+    .stat-break-num { font-size: clamp(80px, 12vw, 160px); font-weight: 800; letter-spacing: -0.06em; line-height: 1; color: var(--coral); margin-bottom: 16px; }
+    .stat-break-label { font-size: clamp(16px, 2vw, 22px); color: var(--t3); font-weight: 400; max-width: 560px; margin: 0 auto; line-height: 1.6; }
+    .stat-break-label strong { color: var(--t2); font-weight: 600; }
+
+    /* ── Marquee ─────────────────────────────────────────────────────────── */
+    .marquee-wrap { padding: 28px 0; background: var(--surface); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); overflow: hidden; }
+    .marquee-track { display: flex; gap: 0; animation: marquee 32s linear infinite; white-space: nowrap; }
+    .marquee-track:hover { animation-play-state: paused; }
+    .marquee-item { display: inline-flex; align-items: center; gap: 20px; font-family: var(--mono); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--t4); padding: 0 36px; }
+    .marquee-dot { width: 3px; height: 3px; border-radius: 50%; background: var(--coral); opacity: 0.5; }
+    @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+    /* ── Section headline ────────────────────────────────────────────────── */
+    .section-headline { padding: 120px 48px; max-width: 900px; margin: 0 auto; text-align: center; }
+    .eyebrow { font-family: var(--mono); font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--coral); display: block; margin-bottom: 20px; }
+    .section-headline h2 { font-size: clamp(34px, 4.5vw, 60px); font-weight: 800; letter-spacing: -0.04em; line-height: 1.06; margin-bottom: 22px; }
+    .section-headline p { font-size: 17px; color: var(--t3); line-height: 1.75; max-width: 560px; margin: 0 auto; }
+
+    /* ── Feature rows ────────────────────────────────────────────────────── */
+    .feat-row { display: grid; grid-template-columns: 1fr 1fr; min-height: 580px; border-top: 1px solid var(--border); }
+    .feat-row.flip { direction: rtl; }
+    .feat-row.flip > * { direction: ltr; }
+
+    .feat-text-col { display: flex; align-items: center; padding: 80px 72px; }
+    .feat-text-col-inner { max-width: 440px; }
+    .feat-text-col-inner .eyebrow { text-align: left; margin-bottom: 16px; }
+    .feat-text-col-inner h2 { font-size: clamp(28px, 3.2vw, 44px); font-weight: 800; letter-spacing: -0.04em; line-height: 1.08; margin-bottom: 18px; }
+    .feat-text-col-inner h3 { font-size: 13px; font-weight: 600; color: var(--t3); letter-spacing: 0.04em; margin-bottom: 14px; text-transform: uppercase; }
+    .feat-text-col-inner p { font-size: 15px; color: var(--t3); line-height: 1.75; margin-bottom: 18px; }
+    .feat-text-col-inner p:last-child { margin-bottom: 0; }
+
+    .feat-img-col { display: flex; align-items: center; justify-content: center; padding: 60px 40px; background: var(--bg2); border-left: 1px solid var(--border); overflow: hidden; }
+    .feat-row.flip .feat-img-col { border-left: none; border-right: 1px solid var(--border); }
+    .feat-img-col img { border-radius: 10px; border: 1px solid var(--border2); box-shadow: 0 24px 80px rgba(0,0,0,0.6); transition: transform 0.4s cubic-bezier(0.16,1,0.3,1); }
+    .feat-img-col img:hover { transform: scale(1.025); }
+
+    /* ── Shortcuts ───────────────────────────────────────────────────────── */
+    #shortcuts { padding: 120px 48px; border-top: 1px solid var(--border); background: var(--bg2); }
+    .shortcuts-inner { max-width: 960px; margin: 0 auto; }
+    .shortcuts-header { text-align: center; margin-bottom: 64px; }
+    .shortcuts-header h2 { font-size: clamp(32px, 4vw, 54px); font-weight: 800; letter-spacing: -0.04em; margin-bottom: 14px; }
+    .shortcuts-header p { font-size: 16px; color: var(--t3); }
+
+    .sc-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
+    .sc-group { background: var(--bg); }
+    .sc-group-label { font-family: var(--mono); font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--coral); padding: 16px 20px 12px; border-bottom: 1px solid var(--border); }
+    .sc-row { display: flex; align-items: center; justify-content: space-between; padding: 11px 20px; border-bottom: 1px solid var(--border); transition: background 0.12s; cursor: default; }
+    .sc-row:last-child { border-bottom: none; }
+    .sc-row:hover { background: var(--surface); }
+    .sc-desc { font-size: 12px; color: var(--t3); }
+    .sc-key { font-family: var(--mono); font-size: 10px; background: var(--surface); border: 1px solid var(--border2); border-bottom-width: 2px; border-radius: 5px; padding: 3px 8px; color: var(--t3); transition: color 0.15s, border-color 0.15s, background 0.15s; }
+    .sc-row:hover .sc-key { color: var(--coral); border-color: rgba(91,106,255,0.3); background: rgba(91,106,255,0.06); }
+    .sc-chord-hint { font-family: var(--mono); font-size: 9px; color: rgba(255,255,255,0.18); padding: 5px 20px; background: rgba(91,106,255,0.04); border-top: 1px solid var(--border); }
+
+    /* ── Pricing ─────────────────────────────────────────────────────────── */
+    #pricing { padding: 120px 48px; border-top: 1px solid var(--border); text-align: center; position: relative; overflow: hidden; }
+    #pricing::before { content: ''; position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 800px; height: 400px; background: radial-gradient(ellipse at bottom center, rgba(91,106,255,0.08) 0%, transparent 70%); pointer-events: none; }
+
+    .pricing-inner { max-width: 560px; margin: 0 auto; position: relative; }
+    .pricing-inner h2 { font-size: clamp(36px, 5vw, 64px); font-weight: 800; letter-spacing: -0.04em; margin-bottom: 14px; line-height: 1; }
+    .pricing-inner .sub { font-size: 16px; color: var(--t3); margin-bottom: 52px; line-height: 1.65; }
+
+    .pricing-card { background: var(--surface); border: 1px solid var(--border2); border-radius: 20px; padding: 48px 44px; text-align: left; position: relative; box-shadow: 0 24px 80px rgba(0,0,0,0.4); }
+    .pricing-badge { position: absolute; top: -14px; left: 50%; transform: translateX(-50%); background: var(--coral); color: #fff; font-family: var(--mono); font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; padding: 5px 18px; border-radius: 100px; white-space: nowrap; box-shadow: 0 4px 20px rgba(91,106,255,0.3); }
+    .pricing-price { font-size: 80px; font-weight: 800; letter-spacing: -0.05em; line-height: 1; color: var(--coral); margin-bottom: 4px; }
+    .pricing-cycle { font-family: var(--mono); font-size: 11px; color: var(--t4); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 36px; }
+    .pricing-feats { list-style: none; display: flex; flex-direction: column; gap: 14px; margin-bottom: 36px; }
+    .pricing-feats li { display: flex; align-items: center; gap: 12px; font-size: 14px; color: var(--t2); }
+    .pricing-feats li .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--coral); flex-shrink: 0; }
+
+    .btn-full { display: block; width: 100%; font-size: 15px; font-weight: 700; color: #fff; background: var(--coral); padding: 16px; border-radius: 10px; text-align: center; box-shadow: 0 8px 32px rgba(91,106,255,0.3); transition: background 0.15s, transform 0.15s, box-shadow 0.15s; }
+    .btn-full:hover { background: var(--coral-d); transform: translateY(-2px); box-shadow: 0 12px 40px rgba(91,106,255,0.42); }
+    .pricing-fine { font-family: var(--mono); font-size: 11px; color: var(--t4); text-align: center; margin-top: 14px; }
+
+    .support-strip { display: flex; align-items: center; justify-content: space-between; gap: 20px; margin-top: 20px; background: rgba(255,255,255,0.04); border: 1px solid var(--border); border-radius: 14px; padding: 20px 28px; text-align: left; }
+    .support-strip-text h4 { font-size: 14px; font-weight: 600; margin-bottom: 4px; color: var(--t2); }
+    .support-strip-text p { font-size: 13px; color: var(--t4); line-height: 1.5; }
+    .support-strip-btn { flex-shrink: 0; font-size: 13px; font-weight: 600; color: var(--t2); background: var(--surface); border: 1px solid var(--border2); border-bottom-width: 2px; border-radius: 8px; padding: 9px 18px; transition: background 0.15s, color 0.15s; white-space: nowrap; }
+    .support-strip-btn:hover { background: var(--border2); color: var(--t1); }
+
+    /* ── Compare ─────────────────────────────────────────────────────────── */
+    #compare { padding: 120px 48px; border-top: 1px solid var(--border); }
+    .compare-inner { max-width: 900px; margin: 0 auto; }
+    .compare-header { text-align: center; margin-bottom: 56px; }
+    .compare-header h2 { font-size: clamp(32px, 4vw, 52px); font-weight: 800; letter-spacing: -0.04em; margin-bottom: 12px; }
+    .compare-header p { font-size: 16px; color: var(--t3); }
+
+    table.cmp { width: 100%; border-collapse: separate; border-spacing: 0; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+    table.cmp th { font-size: 12px; font-weight: 700; padding: 14px 20px; background: var(--surface); color: var(--t3); border-bottom: 1px solid var(--border); text-align: center; letter-spacing: 0.04em; text-transform: uppercase; }
+    table.cmp th:first-child { text-align: left; }
+    table.cmp th.hl { background: rgba(91,106,255,0.1); color: var(--coral); }
+    table.cmp td { font-size: 13px; padding: 12px 20px; text-align: center; color: var(--t3); border-bottom: 1px solid var(--border); background: var(--bg); }
+    table.cmp td:first-child { text-align: left; color: var(--t2); font-weight: 500; }
+    table.cmp td.hl { background: rgba(91,106,255,0.04); }
+    table.cmp tr:last-child td { border-bottom: none; }
+    .chk { color: var(--coral); font-size: 15px; } .crs { color: var(--t4); } .prt { color: rgba(255,200,80,0.8); }
+    .fnote { font-family: var(--mono); font-size: 11px; color: var(--t4); text-align: center; margin-top: 18px; }
+
+    /* ── FAQ ─────────────────────────────────────────────────────────────── */
+    #faq { padding: 120px 48px; border-top: 1px solid var(--border); max-width: 720px; margin: 0 auto; }
+    #faq h2 { font-size: clamp(32px, 4vw, 52px); font-weight: 800; letter-spacing: -0.04em; text-align: center; margin-bottom: 56px; }
+    .faq-item { border-bottom: 1px solid var(--border); padding: 22px 0; cursor: pointer; }
+    .faq-item:first-of-type { border-top: 1px solid var(--border); }
+    .faq-q { display: flex; align-items: center; justify-content: space-between; gap: 20px; font-size: 15px; font-weight: 600; user-select: none; }
+    .faq-chevron { color: var(--t4); font-size: 20px; transition: transform 0.25s, color 0.25s; flex-shrink: 0; }
+    .faq-item.open .faq-chevron { transform: rotate(45deg); color: var(--coral); }
+    .faq-a { font-size: 14px; color: var(--t3); line-height: 1.8; max-height: 0; overflow: hidden; transition: max-height 0.35s ease, padding 0.35s ease; }
+    .faq-item.open .faq-a { max-height: 300px; padding-top: 14px; }
+    .faq-a code { font-family: var(--mono); font-size: 12px; background: var(--surface); border: 1px solid var(--border2); border-radius: 4px; padding: 1px 6px; color: var(--t2); }
+
+    /* ── Notify ──────────────────────────────────────────────────────────── */
+    #notify { padding: 80px 48px; border-top: 1px solid var(--border); background: var(--bg2); text-align: center; }
+    .notify-inner { max-width: 440px; margin: 0 auto; }
+    .notify-inner h3 { font-size: 24px; font-weight: 700; letter-spacing: -0.03em; margin-bottom: 10px; }
+    .notify-inner p { font-size: 14px; color: var(--t3); margin-bottom: 24px; line-height: 1.6; }
+    .notify-form { display: flex; gap: 8px; }
+    .notify-input { flex: 1; background: var(--surface); border: 1px solid var(--border2); border-radius: 9px; padding: 12px 16px; font-size: 14px; color: var(--t1); font-family: var(--font); outline: none; transition: border-color 0.2s, box-shadow 0.2s; }
+    .notify-input::placeholder { color: var(--t4); }
+    .notify-input:focus { border-color: rgba(91,106,255,0.4); box-shadow: 0 0 0 3px rgba(91,106,255,0.08); }
+    .notify-btn { font-size: 14px; font-weight: 700; color: #fff; background: var(--coral); border: none; border-radius: 9px; padding: 12px 22px; cursor: pointer; font-family: var(--font); transition: background 0.2s, transform 0.1s; white-space: nowrap; }
+    .notify-btn:hover { background: var(--coral-d); transform: translateY(-1px); }
+    .notify-fine { font-family: var(--mono); font-size: 11px; color: var(--t4); margin-top: 10px; }
+    .notify-success { display: none; font-family: var(--mono); font-size: 12px; color: var(--green); padding-top: 8px; }
+
+    /* ── Download ────────────────────────────────────────────────────────── */
+    #download { padding: 140px 48px; border-top: 1px solid var(--border); text-align: center; position: relative; overflow: hidden; }
+    #download::before { content: ''; position: absolute; top: -100px; left: 50%; transform: translateX(-50%); width: 1000px; height: 700px; background: radial-gradient(ellipse at center top, rgba(91,106,255,0.12) 0%, rgba(91,106,255,0.04) 40%, transparent 70%); pointer-events: none; }
+    .dl-inner { max-width: 700px; margin: 0 auto; position: relative; }
+    .dl-inner h2 { font-size: clamp(42px, 6vw, 80px); font-weight: 800; letter-spacing: -0.04em; line-height: 1.02; margin-bottom: 18px; }
+    .dl-inner p { font-size: 17px; color: var(--t3); margin-bottom: 48px; line-height: 1.65; }
+    .dl-btn { display: inline-flex; align-items: center; gap: 12px; font-size: 17px; font-weight: 700; color: #fff; background: var(--coral); padding: 18px 38px; border-radius: 12px; box-shadow: 0 0 60px rgba(91,106,255,0.28); transition: transform 0.15s, box-shadow 0.15s, background 0.15s; margin-bottom: 20px; }
+    .dl-btn:hover { background: var(--coral-d); transform: translateY(-3px); box-shadow: 0 12px 60px rgba(91,106,255,0.44); }
+    .dl-meta { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; font-family: var(--mono); font-size: 11px; color: var(--t4); letter-spacing: 0.08em; gap: 0; margin-bottom: 72px; }
+    .dl-meta span { padding: 0 12px; }
+    .dl-meta span + span { border-left: 1px solid var(--border2); }
+
+    .steps { display: flex; align-items: center; justify-content: center; gap: 0; max-width: 580px; margin: 0 auto; }
+    .step { flex: 1; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; text-align: left; }
+    .step-num { font-family: var(--mono); font-size: 10px; color: var(--coral); letter-spacing: 0.12em; margin-bottom: 6px; display: block; }
+    .step h4 { font-size: 13px; font-weight: 600; margin-bottom: 4px; }
+    .step p { font-size: 11px; color: var(--t4); line-height: 1.5; }
+    .step-arrow { color: var(--t4); padding: 0 10px; font-size: 16px; flex-shrink: 0; }
+
+    .big-stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; margin-top: 64px; }
+    .big-stat { background: var(--bg); padding: 32px; text-align: center; }
+    .big-stat-n { font-size: 46px; font-weight: 800; letter-spacing: -0.05em; color: var(--coral); margin-bottom: 6px; line-height: 1; }
+    .big-stat-l { font-family: var(--mono); font-size: 11px; color: var(--t4); letter-spacing: 0.1em; text-transform: uppercase; }
+
+    /* ── Footer ──────────────────────────────────────────────────────────── */
+    footer { border-top: 1px solid var(--border); padding: 36px 48px; display: flex; align-items: center; justify-content: space-between; }
+    .foot-brand { display: flex; align-items: center; gap: 10px; }
+    .foot-name { font-size: 13px; font-weight: 600; color: var(--t3); }
+    .foot-right { font-family: var(--mono); font-size: 11px; color: var(--t4); }
+
+    /* ── Inline CTA ─────────────────────────────────────────────────────────── */
+    .inline-cta { padding: 72px 48px; text-align: center; border-top: 1px solid var(--border); background: var(--bg2); }
+    .inline-cta-note { font-family: var(--mono); font-size: 11px; color: var(--t4); margin-top: 14px; letter-spacing: 0.06em; }
+
+    /* ── Built for ──────────────────────────────────────────────────────────── */
+    #builtfor { padding: 120px 48px; border-top: 1px solid var(--border); }
+    .builtfor-inner { max-width: 960px; margin: 0 auto; text-align: center; }
+    .builtfor-inner h2 { font-size: clamp(32px, 4vw, 52px); font-weight: 800; letter-spacing: -0.04em; margin-bottom: 56px; }
+    .builtfor-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; text-align: left; }
+    .builtfor-card { background: var(--bg); padding: 36px 32px; }
+    .builtfor-title { font-size: 15px; font-weight: 700; letter-spacing: -0.02em; color: var(--t1); margin-bottom: 12px; }
+    .builtfor-title::before { content: ''; display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--coral); margin-right: 10px; vertical-align: middle; position: relative; top: -1px; }
+    .builtfor-card p { font-size: 14px; color: var(--t3); line-height: 1.75; }
+
+    /* ── Founder note ────────────────────────────────────────────────────────── */
+    .founder-note { max-width: 680px; margin: 0 auto 80px; padding: 0 48px; text-align: center; }
+    .founder-quote { font-size: clamp(16px, 2vw, 20px); color: var(--t2); line-height: 1.7; font-style: italic; font-weight: 400; quotes: none; margin-bottom: 18px; }
+    .founder-sig { font-family: var(--mono); font-size: 12px; color: var(--t4); letter-spacing: 0.08em; }
+
+    /* ── Responsive ──────────────────────────────────────────────────────── */
+    @media (max-width: 900px) {
+      nav { padding: 0 24px; } .nav-links { display: none; }
+      #hero, #shortcuts, #pricing, #compare, #faq, #notify, #download, .section-headline { padding: 80px 24px; }
+      .stat-break { padding: 80px 24px; }
+      .hero-actions { flex-direction: column; align-items: stretch; } .btn-primary { justify-content: center; }
+      .feat-row, .feat-row.flip { grid-template-columns: 1fr; direction: ltr; }
+      .feat-img-col { border-left: none !important; border-right: none !important; border-top: 1px solid var(--border); min-height: 280px; padding: 40px 24px; }
+      .feat-text-col { padding: 60px 24px; } .feat-text-col-inner { max-width: 100%; }
+      .builtfor-grid { grid-template-columns: 1fr; }
+      .founder-note { padding: 0 24px; margin-bottom: 56px; }
+      .sc-grid { grid-template-columns: 1fr; }
+      table.cmp th:nth-child(5), table.cmp td:nth-child(5) { display: none; }
+      .steps { flex-direction: column; gap: 8px; } .step-arrow { transform: rotate(90deg); }
+      .notify-form { flex-direction: column; }
+      .big-stats { grid-template-columns: 1fr; }
+      .support-strip { flex-direction: column; text-align: center; }
+      footer { flex-direction: column; gap: 12px; text-align: center; padding: 32px 24px; }
+    }
+
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+  </style>
+</head>
+<body>
+
+<!-- ── Nav ──────────────────────────────────────────────────────────────── -->
+<nav id="mainNav">
+  <div class="nav-brand">
+    <div class="nav-icon">
+      <svg width="14" height="14" viewBox="0 0 1024 1024" fill="none" aria-hidden="true">
+        <circle cx="310" cy="360" r="44" stroke="white" stroke-width="68" fill="none"/>
+        <polyline points="289,360 306,378 334,344" stroke="white" stroke-width="68" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        <circle cx="310" cy="512" r="44" stroke="white" stroke-width="68" fill="none"/>
+        <polyline points="289,512 306,530 334,496" stroke="white" stroke-width="68" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        <circle cx="310" cy="664" r="44" stroke="rgba(255,255,255,0.4)" stroke-width="68" fill="none"/>
+        <polygon points="590,620 558,672 582,672 550,724 614,660 588,660" fill="rgba(255,255,255,0.6)"/>
+      </svg>
+    </div>
+    SuperTasks
+  </div>
+  <ul class="nav-links">
+    <li><a href="#features">Features</a></li>
+    <li><a href="#shortcuts">Shortcuts</a></li>
+    <li><a href="#pricing">Pricing</a></li>
+    <li><a href="#faq">FAQ</a></li>
+  </ul>
+  <a href="#download" class="nav-cta">Download Free</a>
+</nav>
+
+<!-- ── Hero ─────────────────────────────────────────────────────────────── -->
+<section id="hero">
+  <div class="hero-eyebrow r">
+    <span class="hero-eyebrow-line"></span>
+    For Mac &nbsp;&middot;&nbsp; Free forever &nbsp;&middot;&nbsp; No account, ever
+    <span class="hero-eyebrow-line"></span>
+  </div>
+  <h1 class="hero-h1 r d1">Fly through your tasks.<br><span class="accent">Every action, one key.</span></h1>
+  <p class="hero-sub r d2">Built for keyboard speed. Every view, every task, every action — without touching your mouse. Your data stays on your Mac. No account. No subscription. No cloud.</p>
+  <div class="hero-actions r d3">
+    <a href="#download" class="btn-primary" id="heroDlBtn">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+      Download for Mac &mdash; Free
+    </a>
+    <a href="#see-it-work" class="btn-secondary">
+      Watch it work
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </a>
+  </div>
+  <div class="hero-trust r d4">
+    <span>macOS 12+</span><span class="hero-trust-dot"></span>
+    <span>Intel &amp; Apple Silicon</span><span class="hero-trust-dot"></span>
+    <span>~25 MB</span><span class="hero-trust-dot"></span>
+    <span>v1.0.0</span>
+  </div>
+  <!-- Task list + detail pane — shows the product actually working -->
+  <div class="r d5" style="width:100%;max-width:960px;">
+    <img src="./SCR-20260401-bdmm.png" alt="SuperTasks — Today view with task detail panel open" class="hero-screenshot" loading="eager" />
+  </div>
+</section>
+
+<!-- ── Marquee ───────────────────────────────────────────────────────────── -->
+<div class="marquee-wrap">
+  <div class="marquee-track" aria-hidden="true">
+    <span class="marquee-item"><span class="marquee-dot"></span>Keyboard-first</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>No subscription</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>Your data, your Mac</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>22+ shortcuts</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>No account</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>Free forever</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>Command palette</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>Offline-first</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>Your data, your Mac</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>Open data format</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>Keyboard-first</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>No subscription</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>Your data, your Mac</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>22+ shortcuts</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>No account</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>Free forever</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>Command palette</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>Offline-first</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>Your data, your Mac</span>
+    <span class="marquee-item"><span class="marquee-dot"></span>Open data format</span>
+  </div>
+</div>
+
+<!-- ── Stat break ────────────────────────────────────────────────────────── -->
+<div class="stat-break">
+  <div class="stat-break-num r">22+</div>
+  <p class="stat-break-label r d1">Keyboard shortcuts built in. Every action, every view, every task. <strong>Not one reason to touch your mouse.</strong></p>
+</div>
+
+<!-- ── Section intro ─────────────────────────────────────────────────────── -->
+<div class="section-headline" id="features">
+  <span class="eyebrow r">The problem</span>
+  <h2 class="r d1">Every other app is fighting you.</h2>
+  <p class="r d2">You open a task manager to work. Instead you get subscriptions, accounts, sync errors, and a UI that buries the task list three menus deep. SuperTasks just gets out of your way.</p>
+</div>
+
+<!-- ── Feature: Command palette ─────────────────────────────────────────── -->
+<div class="feat-row" id="see-it-work">
+  <div class="feat-text-col">
+    <div class="feat-text-col-inner">
+      <span class="eyebrow r">Command palette</span>
+      <h2 class="r d1">Everything, one keystroke away.</h2>
+      <h3 class="r d2">One shortcut. Everything unlocked.</h3>
+      <p class="r d2">Press &#8984;K and every action is one selection away. Navigate to any view, find any task, run any command — hands never leaving the keyboard.</p>
+      <p class="r d3">Used commands surface automatically. Shortcut hints show inline. It gets faster the more you use it.</p>
+    </div>
+  </div>
+  <div class="feat-img-col">
+    <img src="./SCR-20260401-bdjb.png" alt="SuperTasks command palette showing navigation and view options" class="r d2" loading="lazy" />
+  </div>
+</div>
+
+<!-- ── Feature: Task detail ──────────────────────────────────────────────── -->
+<div class="feat-row flip">
+  <div class="feat-text-col">
+    <div class="feat-text-col-inner">
+      <span class="eyebrow r">Task detail</span>
+      <h2 class="r d1">Full context. Never leaving the list.</h2>
+      <h3 class="r d2">Side panel. No navigation.</h3>
+      <p class="r d2">Hit Enter and a detail panel slides in — priority, due date, project, notes. Everything in reach without losing your place in the list.</p>
+      <p class="r d3">Four priority levels. Hold a task until a future date and it vanishes until you need it. Notes save as you type. No modals, no separate pages.</p>
+    </div>
+  </div>
+  <div class="feat-img-col">
+    <img src="./SCR-20260401-bdmm.png" alt="SuperTasks task detail panel with notes, priority, and due date" class="r d2" loading="lazy" />
+  </div>
+</div>
+
+<!-- ── Feature: Inbox zero ───────────────────────────────────────────────── -->
+<div class="feat-row">
+  <div class="feat-text-col">
+    <div class="feat-text-col-inner">
+      <span class="eyebrow r">Inbox zero</span>
+      <h2 class="r d1">Empty never felt this good.</h2>
+      <h3 class="r d2">A daily reward for finishing</h3>
+      <p class="r d2">Clear your list and SuperTasks doesn&rsquo;t show you a blank page. It shows you a full-screen landscape photo — a new one every day, with a greeting that knows the time of day.</p>
+      <p class="r d3">It turns inbox zero from a fleeting moment into something you actually look forward to. A quiet signal: you&rsquo;re done. Go live your life.</p>
+    </div>
+  </div>
+  <div class="feat-img-col">
+    <img src="./SCR-20260401-bdbd.jpeg" alt="SuperTasks inbox zero screen showing a mountain landscape" class="r d2" loading="lazy" />
+  </div>
+</div>
+
+<!-- ── Stat break ────────────────────────────────────────────────────────── -->
+<div class="stat-break">
+  <div class="stat-break-num r">$0</div>
+  <p class="stat-break-label r d1">Per month. Per year. <strong>Forever. Every feature included. No trial. No nag. No paywall.</strong></p>
+</div>
+
+<!-- ── Built for ─────────────────────────────────────────────────────────── -->
+<section id="builtfor">
+  <div class="builtfor-inner">
+    <span class="eyebrow r" style="display:block;margin-bottom:16px;">Built for</span>
+    <h2 class="r d1">People who think faster than they click.</h2>
+    <div class="builtfor-grid r d2">
+      <div class="builtfor-card">
+        <div class="builtfor-title">The keyboard native</div>
+        <p>You live in your terminal, editor, and browser. Every tool you trust is keyboard-first. Your task manager should be no different.</p>
+      </div>
+      <div class="builtfor-card">
+        <div class="builtfor-title">The deep worker</div>
+        <p>Context-switching kills flow. You want to capture a task, schedule it, and get back to work in under five seconds. No modals, no friction.</p>
+      </div>
+      <div class="builtfor-card">
+        <div class="builtfor-title">The subscription refugee</div>
+        <p>You&rsquo;ve paid for Todoist, tried Things 3, and still feel like you&rsquo;re renting your own productivity. You want software you own. This is it.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Shortcuts ─────────────────────────────────────────────────────────── -->
+<section id="shortcuts">
+  <div class="shortcuts-inner">
+    <div class="shortcuts-header">
+      <span class="eyebrow r" style="display:block">Shortcuts</span>
+      <h2 class="r d1">Learn a few. Forget the mouse.</h2>
+      <p class="r d2">From inbox to done. No mouse, no menus, no detours.</p>
+    </div>
+    <div class="sc-grid r d3">
+      <div class="sc-group">
+        <div class="sc-group-label">Tasks</div>
+        <div class="sc-row"><span class="sc-desc">New task</span><kbd class="sc-key">C</kbd></div>
+        <div class="sc-row"><span class="sc-desc">Open / edit</span><kbd class="sc-key">&#9166;</kbd></div>
+        <div class="sc-row"><span class="sc-desc">Toggle done</span><kbd class="sc-key">D</kbd></div>
+        <div class="sc-row"><span class="sc-desc">Star / flag</span><kbd class="sc-key">S</kbd></div>
+        <div class="sc-row"><span class="sc-desc">Set due date</span><kbd class="sc-key">R</kbd></div>
+        <div class="sc-row"><span class="sc-desc">Hold until</span><kbd class="sc-key">H</kbd></div>
+        <div class="sc-row"><span class="sc-desc">Labels</span><kbd class="sc-key">L</kbd></div>
+        <div class="sc-row"><span class="sc-desc">Project</span><kbd class="sc-key">M</kbd></div>
+        <div class="sc-row"><span class="sc-desc">Delete</span><kbd class="sc-key">&#9003;</kbd></div>
+      </div>
+      <div class="sc-group">
+        <div class="sc-group-label">Navigate</div>
+        <div class="sc-row"><span class="sc-desc">Move down / up</span><kbd class="sc-key">J / K</kbd></div>
+        <div class="sc-row"><span class="sc-desc">Close / go back</span><kbd class="sc-key">Esc</kbd></div>
+        <div class="sc-chord-hint">G-chord &nbsp;&mdash;&nbsp; press G then&hellip;</div>
+        <div class="sc-row"><span class="sc-desc">Inbox</span><kbd class="sc-key">G I</kbd></div>
+        <div class="sc-row"><span class="sc-desc">Today</span><kbd class="sc-key">G T</kbd></div>
+        <div class="sc-row"><span class="sc-desc">Tomorrow</span><kbd class="sc-key">G N</kbd></div>
+        <div class="sc-row"><span class="sc-desc">This Week</span><kbd class="sc-key">G W</kbd></div>
+        <div class="sc-row"><span class="sc-desc">All / Done</span><kbd class="sc-key">G A / D</kbd></div>
+        <div class="sc-row"><span class="sc-desc">Jump to Split 1&ndash;9</span><kbd class="sc-key">G 1&ndash;9</kbd></div>
+      </div>
+      <div class="sc-group">
+        <div class="sc-group-label">Global</div>
+        <div class="sc-row"><span class="sc-desc">Command palette</span><kbd class="sc-key">&#8984;K</kbd></div>
+        <div class="sc-row"><span class="sc-desc">Undo</span><kbd class="sc-key">&#8984;Z</kbd></div>
+        <div class="sc-row"><span class="sc-desc">Show shortcuts</span><kbd class="sc-key">&#8984;/</kbd></div>
+        <div class="sc-row"><span class="sc-desc">Toggle dark / light</span><kbd class="sc-key">&#8984;&#8679;L</kbd></div>
+        <div class="sc-row"><span class="sc-desc">Settings</span><kbd class="sc-key">/</kbd></div>
+        <div class="sc-row"><span class="sc-desc">Select for bulk</span><kbd class="sc-key">X</kbd></div>
+        <div class="sc-row"><span class="sc-desc">Bulk done</span><kbd class="sc-key">&#8984;D</kbd></div>
+        <div class="sc-row"><span class="sc-desc">Bulk delete</span><kbd class="sc-key">&#8984;&#9003;</kbd></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Pricing ───────────────────────────────────────────────────────────── -->
+<section id="pricing">
+  <div class="pricing-inner">
+    <span class="eyebrow r" style="display:block;text-align:center;">Pricing</span>
+    <h2 class="r d1">Free.<br>Not free-ish.</h2>
+    <p class="sub r d2">No trial that expires. No Pro tier. No getting nickel-and-dimed.<br>SuperTasks is free software, full stop.</p>
+    <div class="pricing-card r d3">
+      <div class="pricing-badge">Everything included</div>
+      <div class="pricing-price">$0</div>
+      <div class="pricing-cycle">Per month &nbsp;&middot;&nbsp; Forever</div>
+      <ul class="pricing-feats">
+        <li><span class="dot"></span>Unlimited tasks, projects &amp; labels</li>
+        <li><span class="dot"></span>All 22+ keyboard shortcuts</li>
+        <li><span class="dot"></span>Split views &mdash; up to 5 custom filtered tabs</li>
+        <li><span class="dot"></span>Command palette &amp; global quick-add</li>
+        <li><span class="dot"></span>Priority, labels, due dates, hold-until, notes</li>
+        <li><span class="dot"></span>Your data on your Mac &mdash; no cloud, always offline</li>
+        <li><span class="dot"></span>Dark mode &amp; light mode</li>
+        <li><span class="dot"></span>Full undo stack (&#8984;Z)</li>
+        <li><span class="dot"></span>All future updates, free</li>
+      </ul>
+      <a href="#download" class="btn-full" id="pricingDlBtn">Download free for Mac</a>
+      <p class="pricing-fine">No account created. No email required.</p>
+    </div>
+    <div class="support-strip r d4">
+      <div class="support-strip-text">
+        <h4>Want to say thanks?</h4>
+        <p>No cloud means no servers, which means nothing to charge you for. If SuperTasks saves you an hour a week, a coffee goes a long way.</p>
+      </div>
+      <a href="#" class="support-strip-btn" id="supportBtn">&#9749; Buy me a coffee</a>
+    </div>
+  </div>
+</section>
+
+<!-- ── Compare ───────────────────────────────────────────────────────────── -->
+<section id="compare">
+  <div class="compare-inner">
+    <div class="compare-header">
+      <span class="eyebrow r" style="display:block">Compare</span>
+      <h2 class="r d1">How it stacks up.</h2>
+      <p class="r d2">Built for solo Mac users who live on the keyboard. If that&rsquo;s you, the choice is obvious.</p>
+    </div>
+    <div class="r d3">
+      <table class="cmp">
+        <thead>
+          <tr>
+            <th></th>
+            <th class="hl">SuperTasks</th>
+            <th>Todoist</th>
+            <th>Things 3</th>
+            <th>Apple Reminders</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Price</td>
+            <td class="hl"><strong style="color:var(--coral)">Free</strong></td>
+            <td>$4&ndash;8/mo</td>
+            <td>$49.99</td>
+            <td>Free</td>
+          </tr>
+          <tr>
+            <td>No account needed</td>
+            <td class="hl"><span class="chk">&#10003;</span></td>
+            <td><span class="crs">&#10007;</span></td>
+            <td><span class="crs">&#10007;</span></td>
+            <td><span class="crs">&#10007;</span></td>
+          </tr>
+          <tr>
+            <td>Local storage</td>
+            <td class="hl"><span class="chk">&#10003;</span></td>
+            <td><span class="crs">&#10007;</span></td>
+            <td><span class="prt">&#126;</span></td>
+            <td><span class="crs">&#10007;</span></td>
+          </tr>
+          <tr>
+            <td>Keyboard-first</td>
+            <td class="hl"><span class="chk">&#10003;</span></td>
+            <td><span class="prt">&#126;</span></td>
+            <td><span class="prt">&#126;</span></td>
+            <td><span class="crs">&#10007;</span></td>
+          </tr>
+          <tr>
+            <td>Command palette</td>
+            <td class="hl"><span class="chk">&#10003;</span></td>
+            <td><span class="chk">&#10003;</span></td>
+            <td><span class="crs">&#10007;</span></td>
+            <td><span class="crs">&#10007;</span></td>
+          </tr>
+          <tr>
+            <td>Custom filtered views</td>
+            <td class="hl"><span class="chk">&#10003;</span></td>
+            <td><span class="prt">&#126;</span></td>
+            <td><span class="prt">&#126;</span></td>
+            <td><span class="crs">&#10007;</span></td>
+          </tr>
+          <tr>
+            <td>Open data format</td>
+            <td class="hl"><span class="chk">&#10003;</span></td>
+            <td><span class="crs">&#10007;</span></td>
+            <td><span class="crs">&#10007;</span></td>
+            <td><span class="crs">&#10007;</span></td>
+          </tr>
+        </tbody>
+      </table>
+      <p class="fnote">&#126; = partial support &nbsp;&middot;&nbsp; April 2026</p>
+    </div>
+  </div>
+</section>
+
+<!-- ── Founder note ───────────────────────────────────────────────────────── -->
+<div class="founder-note r">
+  <blockquote class="founder-quote">&ldquo;I built SuperTasks because I was tired of paying $8&nbsp;a month to be interrupted by upgrade prompts in my own task manager. Your tasks should live on your Mac, every action should be one keystroke away, and it should cost exactly nothing.&rdquo;</blockquote>
+  <div class="founder-sig">— Ali Mirza, maker of SuperTasks</div>
+</div>
+
+<!-- ── FAQ ───────────────────────────────────────────────────────────────── -->
+<section id="faq">
+  <h2 class="r">Frequently asked.</h2>
+
+  <div class="faq-item r d1">
+    <div class="faq-q">Is it really free? What&rsquo;s the catch?<span class="faq-chevron">+</span></div>
+    <div class="faq-a">No catch. SuperTasks is free software. No Pro tier, no trial, no feature gating. Your data lives on your Mac &mdash; there are no servers to run, which means there&rsquo;s nothing to charge you for. If it earns your support via Ko-fi, great. If not, that&rsquo;s fine too.</div>
+  </div>
+
+  <div class="faq-item r d1">
+    <div class="faq-q">Where is my data stored?<span class="faq-chevron">+</span></div>
+    <div class="faq-a">In a local SQLite database on your Mac &mdash; typically at <code>~/Library/Application Support/SuperTasks/tasks.db</code>. Open it with TablePlus, DB Browser for SQLite, or script against it however you like. It&rsquo;s your data.</div>
+  </div>
+
+  <div class="faq-item r d2">
+    <div class="faq-q">Does it sync with iPhone?<span class="faq-chevron">+</span></div>
+    <div class="faq-a">Not yet. iOS sync is on the roadmap. Sign up for the newsletter below to get notified when it ships. Your SQLite file isn&rsquo;t going anywhere in the meantime &mdash; it&rsquo;ll migrate cleanly when sync arrives.</div>
+  </div>
+
+  <div class="faq-item r d2">
+    <div class="faq-q">What if you stop developing it?<span class="faq-chevron">+</span></div>
+    <div class="faq-a">Your data is in a standard SQLite file. It doesn&rsquo;t disappear if the app does. Open it with any SQLite browser, export it, or build a migration script. No lock-in by design &mdash; that&rsquo;s a feature, not a footnote.</div>
+  </div>
+
+  <div class="faq-item r d3">
+    <div class="faq-q">Does it work offline?<span class="faq-chevron">+</span></div>
+    <div class="faq-a">100%, always. There&rsquo;s no network dependency at all. The core app works in airplane mode, on a flight, in a basement. Everywhere.</div>
+  </div>
+
+  <div class="faq-item r d3">
+    <div class="faq-q">Do I need to be a developer to use it?<span class="faq-chevron">+</span></div>
+    <div class="faq-a">Not at all. The J/K shortcuts for moving up and down take about five minutes to get used to &mdash; after that, everything clicks. If you use keyboard shortcuts in any app, you can use SuperTasks. The only requirement is a Mac.</div>
+  </div>
+
+  <div class="faq-item r d3">
+    <div class="faq-q">How is it different from Things 3?<span class="faq-chevron">+</span></div>
+    <div class="faq-a">Things 3 is a genuinely polished app &mdash; it&rsquo;s beautiful. The difference is philosophy. Things 3 is designed around visual hierarchy and mouse navigation. SuperTasks is built around the keyboard: Vim-style movement, G-chord view switching, a command palette for every action. If you type faster than you click, you&rsquo;ll feel the difference within minutes. Also: SuperTasks is free and Things 3 costs $49.99.</div>
+  </div>
+</section>
+
+<!-- ── Notify ─────────────────────────────────────────────────────────────── -->
+<section id="notify">
+  <div class="notify-inner">
+    <h3 class="r">iOS sync is coming.</h3>
+    <p class="r d1">Drop your email and we&rsquo;ll let you know when it ships. Two emails a year, max.</p>
+    <form class="notify-form r d2" id="notifyForm" novalidate>
+      <input type="email" class="notify-input" id="notifyEmail" placeholder="your@email.com" autocomplete="email" aria-label="Email address" />
+      <button type="submit" class="notify-btn">Get notified</button>
+    </form>
+    <p class="notify-fine r d2">No account created. Unsubscribe anytime.</p>
+    <p class="notify-success" id="notifySuccess">&#10003; You&rsquo;re on the list.</p>
+  </div>
+</section>
+
+<!-- ── Download ───────────────────────────────────────────────────────────── -->
+<section id="download">
+  <div class="dl-inner">
+    <span class="eyebrow r" style="display:block">Get started</span>
+    <h2 class="r d1">Your tasks are waiting.<br>Start now.</h2>
+    <p class="r d2">Everything set up in under a minute. Press&nbsp;C, add your first task, and you&rsquo;re already moving faster than before.</p>
+    <div class="r d3" style="display:flex;flex-direction:column;align-items:center;">
+      <a href="#" class="dl-btn" id="dlBtn">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+        Download for Mac &mdash; Free
+      </a>
+      <div class="dl-meta">
+        <span>macOS 12+</span>
+        <span>Intel &amp; Apple Silicon</span>
+        <span>v1.0.0</span>
+        <span>~25 MB</span>
+        <span>No account needed</span>
+      </div>
+    </div>
+    <div class="steps r d4">
+      <div class="step">
+        <span class="step-num">01</span>
+        <h4>Download</h4>
+        <p>Click above. The .dmg downloads in seconds.</p>
+      </div>
+      <span class="step-arrow" aria-hidden="true">&#8594;</span>
+      <div class="step">
+        <span class="step-num">02</span>
+        <h4>Install</h4>
+        <p>Drag SuperTasks to Applications.</p>
+      </div>
+      <span class="step-arrow" aria-hidden="true">&#8594;</span>
+      <div class="step">
+        <span class="step-num">03</span>
+        <h4>Go</h4>
+        <p>Press C. Add your first task. Done.</p>
+      </div>
+    </div>
+    <div class="big-stats r d4">
+      <div class="big-stat">
+        <div class="big-stat-n">22+</div>
+        <div class="big-stat-l">Keyboard shortcuts</div>
+      </div>
+      <div class="big-stat">
+        <div class="big-stat-n">$0</div>
+        <div class="big-stat-l">Per month, forever</div>
+      </div>
+      <div class="big-stat">
+        <div class="big-stat-n">0</div>
+        <div class="big-stat-l">Accounts required</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Footer ─────────────────────────────────────────────────────────────── -->
+<footer>
+  <div class="foot-brand">
+    <div class="nav-icon" style="width:22px;height:22px;border-radius:6px;">
+      <svg width="11" height="11" viewBox="0 0 1024 1024" fill="none" aria-hidden="true">
+        <circle cx="310" cy="360" r="44" stroke="white" stroke-width="68" fill="none"/>
+        <polyline points="289,360 306,378 334,344" stroke="white" stroke-width="68" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        <circle cx="310" cy="512" r="44" stroke="white" stroke-width="68" fill="none"/>
+        <polyline points="289,512 306,530 334,496" stroke="white" stroke-width="68" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        <circle cx="310" cy="664" r="44" stroke="rgba(255,255,255,0.4)" stroke-width="68" fill="none"/>
+        <polygon points="590,620 558,672 582,672 550,724 614,660 588,660" fill="rgba(255,255,255,0.6)"/>
+      </svg>
+    </div>
+    <span class="foot-name">SuperTasks</span>
+  </div>
+  <div class="foot-right">Built with &#9825; for Mac &nbsp;&middot;&nbsp; &copy; 2026 Ali Mirza</div>
+</footer>
+
+<script>
+  // ── Scroll reveal ───────────────────────────────────────────────────────
+  var io = new IntersectionObserver(function(entries) {
+    entries.forEach(function(e) {
+      if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+    });
+  }, { threshold: 0.08 });
+  document.querySelectorAll('.r').forEach(function(el) { io.observe(el); });
+
+  // Hero reveals immediately on load
+  document.querySelectorAll('#hero .r').forEach(function(el) {
+    var m = el.className.match(/d(\d)/);
+    setTimeout(function() { el.classList.add('in'); }, m ? parseInt(m[1], 10) * 130 : 0);
+  });
+
+  // ── Nav scroll class ────────────────────────────────────────────────────
+  var nav = document.getElementById('mainNav');
+  window.addEventListener('scroll', function() {
+    nav.classList.toggle('scrolled', window.scrollY > 20);
+  }, { passive: true });
+
+  // ── Download buttons ────────────────────────────────────────────────────
+  // Replace '#' with your actual .dmg URL, e.g.:
+  // 'https://github.com/yourusername/supertasks/releases/latest/download/SuperTasks.dmg'
+  var DMG_URL = '#';
+
+  function handleDownload(e) {
+    e.preventDefault();
+    if (DMG_URL !== '#') {
+      window.location.href = DMG_URL;
+    } else {
+      var notify = document.getElementById('notify');
+      if (notify) notify.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }
+
+  ['dlBtn', 'heroDlBtn', 'pricingDlBtn'].forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) el.addEventListener('click', handleDownload);
+  });
+
+  // ── Email capture ───────────────────────────────────────────────────────
+  var form = document.getElementById('notifyForm');
+  if (form) {
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      var inp = document.getElementById('notifyEmail');
+      var ok  = document.getElementById('notifySuccess');
+      if (!inp || !inp.value || !inp.value.includes('@')) {
+        inp.style.borderColor = 'rgba(91,106,255,0.5)';
+        return;
+      }
+      // TODO: wire to Mailchimp / ConvertKit / Resend
+      form.style.display = 'none';
+      if (ok) ok.style.display = 'block';
+    });
+  }
+
+  // ── FAQ accordion ───────────────────────────────────────────────────────
+  document.querySelectorAll('.faq-item').forEach(function(item) {
+    item.querySelector('.faq-q').addEventListener('click', function() {
+      var wasOpen = item.classList.contains('open');
+      document.querySelectorAll('.faq-item.open').forEach(function(o) { o.classList.remove('open'); });
+      if (!wasOpen) item.classList.add('open');
+    });
+  });
+
+  // ── Support / Ko-fi button ──────────────────────────────────────────────
+  var supportBtn = document.getElementById('supportBtn');
+  if (supportBtn) {
+    supportBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      // Replace with your Ko-fi URL, e.g. 'https://ko-fi.com/yourusername'
+      alert('Replace this with your Ko-fi or GitHub Sponsors URL.');
+    });
+  }
+</script>
+</body>
+</html>
