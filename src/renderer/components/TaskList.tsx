@@ -213,11 +213,11 @@ export default function TaskList() {
         />
       )}
 
-      {/* Optional action button overlaid above the photo credit */}
+      {/* Optional action button — sits well below the text block */}
       {isEmpty && emptyConfig?.actionLabel && activeSplit && (
         <button
           onClick={() => store.setSplitEditorOpen(true, activeSplit.id)}
-          className="no-drag absolute bottom-10 left-1/2 -translate-x-1/2 z-10 text-xs text-white/40 hover:text-white/80 transition-colors underline underline-offset-2"
+          className="no-drag absolute bottom-10 left-1/2 -translate-x-1/2 z-10 text-xs text-white/35 hover:text-white/70 transition-colors underline underline-offset-2"
         >
           {emptyConfig.actionLabel}
         </button>

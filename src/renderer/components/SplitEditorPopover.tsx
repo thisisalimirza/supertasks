@@ -54,6 +54,23 @@ function rulesToRows(rules: SplitRules): ConditionRow[] {
   return rows
 }
 
+function getSplitTypeLabel(rules: import('../types/task').SplitRules): string {
+  const active = [
+    rules.projects.length > 0,
+    rules.labels.length > 0,
+    rules.priorities.length > 0,
+    rules.starred !== null,
+    !!(rules.dueBefore || rules.dueAfter),
+  ].filter(Boolean).length
+
+  if (active !== 1) return 'View'
+  if (rules.projects.length > 0)   return 'Project View'
+  if (rules.labels.length > 0)     return 'Label View'
+  if (rules.priorities.length > 0) return 'Priority View'
+  if (rules.starred !== null)      return 'Starred View'
+  return 'Date View'
+}
+
 export default function SplitEditorPopover() {
   const store = useTaskStore()
   const editingSplit = store.editingSplitId ? store.splits.find(s => s.id === store.editingSplitId) : null
@@ -293,12 +310,22 @@ export default function SplitEditorPopover() {
 
         {/* Footer */}
         <div className="flex items-center justify-between px-5 py-4 border-t border-[var(--c-b1)]">
-          <button
-            onClick={close}
-            className="no-drag text-xs text-[var(--c-t6)] hover:text-[var(--c-t3)] transition-colors font-mono"
-          >
-            ⎋ Cancel
-          </button>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={close}
+              className="no-drag text-xs text-[var(--c-t6)] hover:text-[var(--c-t3)] transition-colors font-mono"
+            >
+              ⎋ Cancel
+            </button>
+            {isEditing && editingSplit && (
+              <button
+                onClick={() => { store.deleteSplit(editingSplit.id); close() }}
+                className="no-drag text-xs text-[var(--c-t7)] hover:text-[var(--c-danger)] transition-colors"
+              >
+                Delete {getSplitTypeLabel(editingSplit.rules)}
+              </button>
+            )}
+          </div>
           <button
             onClick={save}
             className="no-drag px-4 py-1.5 bg-[var(--c-accent)] text-white text-xs font-semibold rounded-lg hover:opacity-90 transition-opacity"

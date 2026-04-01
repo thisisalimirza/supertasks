@@ -65,7 +65,7 @@ export default function InboxZeroScreen({
       />
 
       {/* Text block */}
-      <div className="absolute bottom-14 left-0 right-0 flex flex-col items-center gap-2 select-none">
+      <div className="absolute bottom-28 left-0 right-0 flex flex-col items-center gap-3 select-none">
         {showGreeting && (
           <p className="text-white/50 text-xs font-mono tracking-[0.2em] uppercase">
             {getGreeting()}
@@ -75,11 +75,11 @@ export default function InboxZeroScreen({
           {heading}
         </h2>
         {subheading ? (
-          <p className="text-white/40 text-[11px] font-mono tracking-wider mt-0.5">
+          <p className="text-white/35 text-[11px] font-mono tracking-wider">
             {subheading}
           </p>
         ) : (
-          <p className="text-white/30 text-[10px] font-mono tracking-widest mt-1">
+          <p className="text-white/30 text-[10px] font-mono tracking-widest">
             {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
           </p>
         )}

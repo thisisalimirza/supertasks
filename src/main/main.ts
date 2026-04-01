@@ -1,5 +1,6 @@
 import { app, BrowserWindow, shell, globalShortcut, ipcMain, session } from 'electron'
 import path from 'path'
+import { execFile } from 'child_process'
 import { initDatabase, db } from './database'
 import { registerTaskHandlers } from './handlers/taskHandlers'
 import { registerWindowHandlers } from './handlers/windowHandlers'
@@ -7,6 +8,21 @@ import { registerWindowHandlers } from './handlers/windowHandlers'
 let mainWindow: BrowserWindow | null = null
 let quickAddWindow: BrowserWindow | null = null
 let quickAddReady = false
+let previousActiveApp: string | null = null
+
+function captureFrontmostApp() {
+  if (process.platform !== 'darwin') return
+  execFile('osascript', ['-e', 'name of (path to frontmost application)'], (err, stdout) => {
+    if (!err) previousActiveApp = stdout.trim()
+  })
+}
+
+function restoreFrontmostApp() {
+  if (process.platform !== 'darwin' || !previousActiveApp) return
+  const appName = previousActiveApp
+  previousActiveApp = null
+  execFile('osascript', ['-e', `tell application "${appName}" to activate`])
+}
 
 const VITE_DEV_SERVER_URL = process.env.VITE_DEV_SERVER_URL
 
@@ -91,7 +107,10 @@ function createQuickAddWindow() {
   quickAddWindow.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true })
   // setVisibleOnAllWorkspaces can flip the app to "accessory" activation policy on macOS,
   // which removes the dock icon. Restore it explicitly.
-  if (process.platform === 'darwin') app.dock?.show()
+  if (process.platform === 'darwin') {
+    app.dock?.show()
+    app.dock?.setIcon(path.join(__dirname, '../../assets/icon.png'))
+  }
 
   // Set ready flag after first paint — React is guaranteed to be mounted at this point
   quickAddWindow.once('ready-to-show', () => { quickAddReady = true })
@@ -107,7 +126,7 @@ function createQuickAddWindow() {
     setTimeout(() => {
       if (quickAddWindow && !quickAddWindow.isFocused()) {
         quickAddWindow.hide()
-        mainWindow?.setFocusable(true)
+        restoreFrontmostApp()
       }
     }, 150)
   })
@@ -120,12 +139,11 @@ function showQuickAdd() {
   if (!quickAddWindow) createQuickAddWindow()
   if (quickAddWindow!.isVisible()) {
     quickAddWindow!.hide()
-    mainWindow?.setFocusable(true)
+    restoreFrontmostApp()
     return
   }
   const doShow = () => {
-    // Prevent main window from stealing focus when quick-add is dismissed
-    mainWindow?.setFocusable(false)
+    captureFrontmostApp() // remember what was active before we steal focus
     quickAddWindow!.center()
     quickAddWindow!.show()
     quickAddWindow!.focus()
@@ -133,7 +151,6 @@ function showQuickAdd() {
   if (quickAddReady) {
     doShow()
   } else {
-    // First ever press before first paint — defer until renderer is ready
     quickAddWindow!.once('ready-to-show', () => { quickAddReady = true; doShow() })
   }
 }
@@ -163,7 +180,7 @@ app.whenReady().then(() => {
   // ── IPC: renderer asks to dismiss the quick-add window ───────────────────
   ipcMain.handle('quickadd:dismiss', () => {
     quickAddWindow?.hide()
-    mainWindow?.setFocusable(true)
+    restoreFrontmostApp()
   })
   // ── IPC: renderer drives window height to match card content ─────────────
   ipcMain.handle('quickadd:resize', (_, height: number) => {
