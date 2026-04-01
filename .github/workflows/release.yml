@@ -1,0 +1,35 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release-mac:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build and publish
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Code signing — add these secrets in your repo Settings → Secrets
+          # to produce a notarized, Gatekeeper-approved DMG:
+          #
+          # CSC_LINK               — base64-encoded .p12 certificate
+          # CSC_KEY_PASSWORD       — password for the .p12
+          # APPLE_ID               — your Apple ID email
+          # APPLE_APP_SPECIFIC_PASSWORD — app-specific password from appleid.apple.com
+          # APPLE_TEAM_ID          — 10-char team ID from developer.apple.com
+        run: npm run build:electron -- --publish always
