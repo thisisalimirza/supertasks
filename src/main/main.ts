@@ -1,4 +1,5 @@
-import { app, BrowserWindow, shell, globalShortcut, ipcMain, session, protocol, net } from 'electron'
+import { app, BrowserWindow, shell, globalShortcut, ipcMain, session, protocol } from 'electron'
+import fs from 'fs'
 import path from 'path'
 import { execFile } from 'child_process'
 import { initDatabase, db } from './database'
@@ -174,7 +175,26 @@ app.whenReady().then(() => {
     protocol.handle('app', (request) => {
       const { pathname } = new URL(request.url)
       const filePath = path.join(__dirname, '..', 'renderer', pathname)
-      return net.fetch(`file://${filePath}`)
+      const mimeTypes: Record<string, string> = {
+        '.html': 'text/html',
+        '.js': 'application/javascript',
+        '.css': 'text/css',
+        '.png': 'image/png',
+        '.jpg': 'image/jpeg',
+        '.svg': 'image/svg+xml',
+        '.ico': 'image/x-icon',
+        '.woff': 'font/woff',
+        '.woff2': 'font/woff2',
+      }
+      try {
+        const data = fs.readFileSync(filePath)
+        const ext = path.extname(filePath).toLowerCase()
+        return new Response(data, {
+          headers: { 'content-type': mimeTypes[ext] ?? 'application/octet-stream' },
+        })
+      } catch {
+        return new Response('Not found', { status: 404 })
+      }
     })
   }
 
