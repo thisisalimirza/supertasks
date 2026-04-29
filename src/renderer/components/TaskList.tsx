@@ -223,7 +223,7 @@ export default function TaskList() {
       <div className="shrink-0 relative z-10 px-6 pt-7 pb-5">
 
         {/* Combined heading + nav row — active view name IS the heading, siblings are inline */}
-        <div ref={tabBarRef} className="flex items-baseline flex-wrap gap-x-2 gap-y-1.5 mb-2">
+        <div ref={tabBarRef} className="flex items-baseline flex-wrap gap-x-4 gap-y-1.5 mb-2">
 
           {/* Project view heading (not a built-in or split) */}
           {store.activeView === 'project' && (
