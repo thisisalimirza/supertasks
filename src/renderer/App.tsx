@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useTaskStore } from './store/taskStore'
 import { useKeyboard } from './hooks/useKeyboard'
+import { useWindowWidth } from './hooks/useWindowWidth'
 import TaskList from './components/TaskList'
 import TaskDetail from './components/TaskDetail'
 import CommandPalette from './components/CommandPalette'
@@ -30,6 +31,8 @@ export default function App() {
   const theme = useTaskStore(s => s.theme)
   const isPhotoMode = useTaskStore(s => s.getVisibleTasks().length === 0 && !s.isCreating)
   const shortcuts = useKeyboard()
+  const windowWidth = useWindowWidth()
+  const isNarrow = windowWidth <= 600
 
   // Apply data-theme to root so CSS custom properties switch
   useEffect(() => {
@@ -84,7 +87,8 @@ export default function App() {
           className="flex-1 overflow-hidden"
           style={{
             marginLeft: isSettingsOpen ? 'min(300px, 60%)' : '0',
-            marginRight: isDetailOpen ? 'min(420px, 60%)' : '0',
+            // In narrow mode the detail panel is a full-screen overlay — don't shrink the task list
+            marginRight: isDetailOpen && !isNarrow ? 'min(420px, 60%)' : '0',
           }}
         >
           <TaskList />

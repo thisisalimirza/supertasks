@@ -116,7 +116,42 @@ export default function SplitEditorPopover() {
     }
     if (!trimmed) { nameRef.current?.focus(); return }
     if (isEditing) {
-      await store.updateSplit(editingSplit!.id, { name: trimmed, rules, ruleOperator: operator })
+      const old = editingSplit!
+
+      // ── Project-view rename cascade ───────────────────────────────────────
+      // A "project view" is a split whose name matches its sole project rule and
+      // has no other filter types. Renaming such a split should also re-tag all
+      // tasks that belong to the old project name.
+      const isProjectView =
+        old.rules.projects.length === 1 &&
+        old.rules.labels.length === 0 &&
+        old.rules.priorities.length === 0 &&
+        old.rules.starred === null &&
+        !old.rules.dueBefore &&
+        !old.rules.dueAfter &&
+        old.name === old.rules.projects[0]
+
+      const oldProjectName = isProjectView ? old.rules.projects[0] : null
+
+      // Determine the intended new project name: prefer the condition-row value
+      // if the user explicitly changed it, otherwise fall back to the new split name.
+      const newProjectName =
+        oldProjectName && rules.projects.length === 1 && rules.projects[0] !== oldProjectName
+          ? rules.projects[0]          // user edited the condition row
+          : oldProjectName && trimmed !== oldProjectName
+            ? trimmed                  // user only changed the split name
+            : null                     // no project rename needed
+
+      if (oldProjectName && newProjectName) {
+        await store.renameProject(oldProjectName, newProjectName)
+        // Ensure the saved rules point to the new name even if the
+        // condition row still showed the old value.
+        if (rules.projects.length === 0 || rules.projects[0] === oldProjectName) {
+          rules.projects = [newProjectName]
+        }
+      }
+
+      await store.updateSplit(old.id, { name: trimmed, rules, ruleOperator: operator })
     } else {
       const split = await store.createSplit({ name: trimmed, rules, ruleOperator: operator, enabled: true })
       store.setActiveSplit(split.id)

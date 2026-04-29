@@ -131,11 +131,13 @@ export default function TaskRow({ task, isSelected, isChecked, isDragOver, isDra
           />
         ) : (
           <div className="flex items-baseline gap-4 min-w-0">
-            <span className={`text-sm shrink-0 max-w-[50%] truncate ${isDone ? 'line-through text-[var(--c-t6)]' : 'text-[var(--c-t1)]'}`}>
+            {/* Title: no artificial width cap — takes all available space and truncates */}
+            <span className={`text-sm min-w-0 truncate ${isDone ? 'line-through text-[var(--c-t6)]' : 'text-[var(--c-t1)]'}`}>
               {task.title}
             </span>
+            {/* Notes: secondary metadata — capped at 40% so it never crowds the title */}
             {task.notes?.trim() && (
-              <span className="text-xs text-[var(--c-t7)] truncate min-w-0">
+              <span className="text-xs text-[var(--c-t7)] truncate shrink-0 max-w-[40%]">
                 {task.notes.trim().replace(/\n/g, ' · ')}
               </span>
             )}

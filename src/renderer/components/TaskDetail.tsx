@@ -1,8 +1,12 @@
 import { useState, useEffect, useRef } from 'react'
 import { useTaskStore } from '../store/taskStore'
+import { useWindowWidth } from '../hooks/useWindowWidth'
 import PriorityDot from './PriorityDot'
 import type { TaskPriority } from '../types/task'
 import { format, parseISO } from 'date-fns'
+
+/** Below this width the detail panel becomes a full-screen overlay instead of a side panel */
+const NARROW_BREAKPOINT = 600
 
 const PRIORITY_LABELS: TaskPriority[] = ['none', 'low', 'medium', 'high', 'urgent']
 const PRIORITY_COLORS: Record<TaskPriority, string> = {
@@ -17,6 +21,8 @@ export default function TaskDetail() {
   const store = useTaskStore()
   const isOpen = store.isDetailOpen
   const task = store.tasks.find(t => t.id === store.selectedTaskId)
+  const windowWidth = useWindowWidth()
+  const isNarrow = windowWidth <= NARROW_BREAKPOINT
 
   const [dueInput, setDueInput] = useState('')
   const [startInput, setStartInput] = useState('')
@@ -84,14 +90,22 @@ export default function TaskDetail() {
   return (
     <>
       {isOpen && (
-        <div className="absolute right-0 top-0 bottom-0 w-[420px] border-l border-[var(--c-b2)] bg-[var(--c-panel)] flex flex-col overflow-hidden">
+        <div
+          className={[
+            'bg-[var(--c-panel)] flex flex-col overflow-hidden',
+            isNarrow
+              // top-11 clears the 44px TitleBar so traffic lights are never covered
+              ? 'fixed inset-x-0 bottom-0 top-11 z-30'
+              : 'absolute right-0 top-0 bottom-0 w-[420px] border-l border-[var(--c-b2)]',
+          ].join(' ')}
+        >
           {/* Header */}
           <div className="flex items-center justify-between px-6 pt-5 pb-4 border-b border-[var(--c-b1)]">
             <button
               onClick={() => store.closeDetail()}
               className="no-drag text-[var(--c-t6)] hover:text-[var(--c-t4)] transition-colors text-sm"
             >
-              ← Close
+              {isNarrow ? '← Back' : '← Close'}
             </button>
             <div className="flex items-center gap-2">
               <button

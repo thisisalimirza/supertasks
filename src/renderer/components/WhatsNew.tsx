@@ -8,6 +8,28 @@ interface Props {
 // Add a new entry here for each release that has user-facing changes.
 // Key = version string matching package.json. Oldest entries can be pruned over time.
 const CHANGELOGS: Record<string, { emoji: string; title: string; detail?: string }[]> = {
+  '1.0.3': [
+    {
+      emoji: '📱',
+      title: 'Slim window detail panel',
+      detail: 'Opening a task\'s detail panel in a narrow window now takes over the full screen — tap "← Back" or press ⎋ to return to the list.',
+    },
+    {
+      emoji: '✏️',
+      title: 'Project rename cascades everywhere',
+      detail: 'Renaming a project view now updates all tasks tagged to that project and the split filter rule automatically — no more stale labels.',
+    },
+    {
+      emoji: '🏷',
+      title: 'Task titles no longer clip early',
+      detail: 'The title in each row now uses all available space before truncating. Notes previews are kept as secondary metadata on the right.',
+    },
+    {
+      emoji: '🔡',
+      title: 'Active view name sizes down when empty',
+      detail: 'The view heading stays small in photo/empty mode so it blends with the navigation row instead of fighting the background image.',
+    },
+  ],
   '1.0.2': [
     {
       emoji: '👋',

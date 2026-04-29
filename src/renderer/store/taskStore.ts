@@ -131,6 +131,8 @@ interface TaskStore {
   getAllProjectNames: () => string[]
   setTaskProject: (taskId: string, projectName: string) => Promise<void>
   navigateToProject: (projectName: string) => void
+  /** Bulk-rename every task whose project matches oldName, then fix any split rules that referenced it */
+  renameProject: (oldName: string, newName: string) => Promise<void>
 
   // Splits
   createSplit: (draft: Omit<Split, 'id' | 'createdAt' | 'sortOrder'>) => Promise<Split>
@@ -625,6 +627,25 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
     const all = new Set<string>()
     get().tasks.forEach(t => { if (t.project) all.add(t.project) })
     return Array.from(all).sort()
+  },
+
+  renameProject: async (oldName, newName) => {
+    if (!oldName || !newName || oldName === newName) return
+    // 1. Re-tag every task that belongs to the old project name
+    const affected = get().tasks.filter(t => t.project === oldName)
+    for (const t of affected) {
+      await get().updateTask(t.id, { project: newName })
+    }
+    // 2. Fix any split whose filter rules reference the old project name
+    const splitsToFix = get().splits.filter(sp => sp.rules.projects.includes(oldName))
+    for (const sp of splitsToFix) {
+      await get().updateSplit(sp.id, {
+        rules: {
+          ...sp.rules,
+          projects: sp.rules.projects.map(p => p === oldName ? newName : p),
+        },
+      })
+    }
   },
 
   setTaskProject: async (taskId, projectName) => {
