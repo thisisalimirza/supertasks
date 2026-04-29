@@ -309,7 +309,7 @@ export default function TaskList() {
           {/* Add split button */}
           <button
             onClick={() => store.setSplitEditorOpen(true, null)}
-            className={`no-drag self-center ml-0.5 w-5 h-5 flex items-center justify-center rounded transition-colors text-sm ${
+            className={`no-drag ml-0.5 w-5 h-5 flex items-center justify-center rounded transition-colors text-sm ${
               isEmpty
                 ? 'text-white/35 hover:text-white/70 hover:bg-white/10'
                 : 'text-[var(--c-t7)] hover:text-[var(--c-t3)] hover:bg-[var(--c-btn)]'
