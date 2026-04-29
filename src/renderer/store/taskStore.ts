@@ -808,6 +808,8 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
   getSplitTaskCount: (splitId) => {
     const split = get().splits.find(s => s.id === splitId)
     if (!split) return 0
-    return applySplitFilter(get().tasks, split).length
+    // Only count active (non-done, non-archived) tasks
+    return applySplitFilter(get().tasks, split)
+      .filter(t => t.status !== 'done' && t.status !== 'archived').length
   },
 }))

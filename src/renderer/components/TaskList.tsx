@@ -272,12 +272,14 @@ export default function TaskList() {
               <span
                 key={split.id}
                 data-active-split="true"
-                className={`flex items-center gap-1.5 text-xl font-semibold tracking-tight ${isEmpty ? 'text-white/90' : 'text-[var(--c-t1)]'}`}
+                className={`flex items-center gap-2 text-xl font-semibold tracking-tight ${isEmpty ? 'text-white/90' : 'text-[var(--c-t1)]'}`}
               >
                 {splitColor && <span className="w-2 h-2 rounded-full shrink-0 opacity-80" style={{ backgroundColor: splitColor }} />}
                 {split.name}
                 {count > 0 && (
-                  <span className={`text-sm font-normal tabular-nums ${isEmpty ? 'text-white/40' : 'text-[var(--c-t6)]'}`}>
+                  <span className={`text-xs font-mono tabular-nums px-1.5 py-0.5 rounded-full self-center ${
+                    isEmpty ? 'bg-white/15 text-white/60' : 'bg-[var(--c-btn)] text-[var(--c-t5)]'
+                  }`}>
                     {count}
                   </span>
                 )}
@@ -287,14 +289,16 @@ export default function TaskList() {
                 key={split.id}
                 onClick={() => store.setActiveSplit(split.id)}
                 onContextMenu={e => handleSplitContextMenu(e, split.id)}
-                className={`no-drag flex items-center gap-1 text-sm font-medium transition-colors ${
+                className={`no-drag flex items-center gap-1.5 text-sm font-medium transition-colors ${
                   isEmpty ? 'text-white/40 hover:text-white/75' : 'text-[var(--c-t6)] hover:text-[var(--c-t2)]'
                 }`}
               >
                 {splitColor && <span className="w-1.5 h-1.5 rounded-full shrink-0 opacity-70" style={{ backgroundColor: splitColor }} />}
                 {split.name}
                 {count > 0 && (
-                  <span className={`text-xs font-mono tabular-nums ml-0.5 ${isEmpty ? 'text-white/30' : 'text-[var(--c-t7)]'}`}>
+                  <span className={`text-[10px] font-mono tabular-nums px-1.5 py-0.5 rounded-full ${
+                    isEmpty ? 'bg-white/10 text-white/40' : 'bg-[var(--c-btn)] text-[var(--c-t6)]'
+                  }`}>
                     {count}
                   </span>
                 )}
