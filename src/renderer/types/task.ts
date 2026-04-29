@@ -31,6 +31,10 @@ declare global {
       onTasksChanged: (fn: (view?: string) => void) => () => void
       onEscape: (fn: () => void) => () => void
       onMenuShortcuts: (fn: () => void) => () => void
+      onboarding: {
+        getStatus: () => Promise<boolean>
+        complete: (withDemoData: boolean) => Promise<{ tasks: Task[]; projects: Project[]; splits: Split[] }>
+      }
       quickAdd: {
         signalReady: () => Promise<void>
         submit: (task: Task | null) => Promise<void>

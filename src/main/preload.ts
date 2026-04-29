@@ -46,6 +46,12 @@ const api = {
     return () => { escapeListeners = escapeListeners.filter(f => f !== fn) }
   },
 
+  // Onboarding
+  onboarding: {
+    getStatus: (): Promise<boolean> => ipcRenderer.invoke('onboarding:getStatus'),
+    complete: (withDemoData: boolean) => ipcRenderer.invoke('onboarding:complete', withDemoData),
+  },
+
   // Native menu → renderer bridge
   onMenuShortcuts: (fn: () => void) => {
     const handler = () => fn()

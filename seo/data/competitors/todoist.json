@@ -1,0 +1,75 @@
+{
+  "name": "Todoist",
+  "slug": "todoist",
+  "tagline": "The world's #1 task manager",
+  "price_free": "Free (5 projects, no reminders)",
+  "price_paid": "$4–8/user/mo",
+  "requires_account": true,
+  "local_storage": false,
+  "keyboard_first": false,
+  "command_palette": true,
+  "custom_views": "partial",
+  "open_data": false,
+  "offline": false,
+  "platforms": ["Mac", "Windows", "iOS", "Android", "Web", "Browser"],
+  "team_features": true,
+  "strengths": [
+    "Available on every platform — Windows, Android, web, browser extensions",
+    "Natural language date input ('next Monday', 'every 3 days')",
+    "Strong integrations ecosystem — Zapier, Slack, Google Calendar and 80+ more",
+    "Team collaboration with task assignment, comments, and shared projects",
+    "Excellent, polished mobile app for iOS and Android"
+  ],
+  "weaknesses": [
+    "Monthly subscription required for reminders, filters, and labels",
+    "Account mandatory — your tasks live on Todoist's servers",
+    "Not keyboard-first — fundamentally designed around mouse interaction",
+    "No local storage option — cloud sync is mandatory",
+    "Free tier limited to 5 active projects"
+  ],
+  "best_for": "Teams needing cross-platform access, people who live on mobile, and those who value deep integrations with other tools",
+  "not_for": "Solo Mac users who prioritize keyboard speed, data privacy, and want to avoid a monthly subscription",
+  "switch_reasons": [
+    "Tired of paying $4–8/month for a personal task list",
+    "Don't want tasks stored on Todoist's servers",
+    "Want Vim-style keyboard navigation that Todoist doesn't offer",
+    "Need to work fully offline without sync delays or failures"
+  ],
+  "vs_intro": "Todoist and SuperTasks are built on opposite philosophies. Todoist is built for everyone, synced to the cloud, available on every device. SuperTasks is built for Mac keyboard natives who want speed, data privacy, and zero monthly fees. The right choice hinges on two questions: do you need cross-platform access, and are you willing to pay a monthly subscription for it?",
+  "alternatives_intro": "People look for Todoist alternatives for a handful of predictable reasons: the subscription cost creeps up, important features like reminders are locked behind the paid plan, or they simply don't want their task list living on a third-party server. If any of those match your situation, here are the strongest options.",
+  "other_alternatives": [
+    {
+      "name": "Things 3",
+      "price": "$49.99 one-time",
+      "note": "Beautiful Mac-native design with a one-time purchase. Local storage, no account needed. Great for GTD fans but costs upfront and has fewer keyboard shortcuts."
+    },
+    {
+      "name": "TickTick",
+      "price": "Free / $2.99/mo",
+      "note": "Cross-platform like Todoist with a better free tier. Still subscription-based and cloud-synced, but the free plan is more generous. Good middle ground."
+    },
+    {
+      "name": "Apple Reminders",
+      "price": "Free (built-in)",
+      "note": "Free with every Mac and integrates with Siri. Works well for simple use cases but lacks power-user features, keyboard shortcuts, and custom views."
+    }
+  ],
+  "faq": [
+    {
+      "q": "Is SuperTasks really free compared to Todoist's subscription?",
+      "a": "Yes. SuperTasks is completely free with no trial period, no feature limits, and no Pro upgrade. Todoist's free tier caps you at 5 projects and excludes reminders, filters, and labels. SuperTasks includes everything at no cost because your data stays on your Mac — there are no servers to run, so there's nothing to charge for."
+    },
+    {
+      "q": "Can SuperTasks work offline, unlike Todoist?",
+      "a": "SuperTasks is fully offline with zero network dependency. It works in airplane mode, on a flight, in a basement — everywhere, always. Todoist requires internet for sync and some features break or lag when offline."
+    },
+    {
+      "q": "Which has better keyboard shortcuts — SuperTasks or Todoist?",
+      "a": "SuperTasks is keyboard-first by design: 22+ shortcuts, Vim-style j/k navigation, g-chord view switching, and a command palette (⌘K) for every action. Todoist has some shortcuts, but the app is fundamentally mouse-driven. If your hands rarely leave the keyboard, you'll feel the difference within minutes."
+    },
+    {
+      "q": "Where does my data go in SuperTasks vs Todoist?",
+      "a": "In SuperTasks, your data lives in a local SQLite file on your Mac at ~/Library/Application Support/SuperTasks/tasks.db. You own it completely. In Todoist, your tasks are stored on Todoist's cloud servers — you access them via their app, and your data is subject to their terms and availability."
+    }
+  ]
+}

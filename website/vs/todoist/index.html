@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SuperTasks vs Todoist: Which is right for you? (2026)</title>
+  <meta name="description" content="Honest comparison of SuperTasks vs Todoist. Pricing, keyboard shortcuts, data privacy, and which task manager is right for Mac users." />
+  <meta name="theme-color" content="#0A0A0A" />
+  <link rel="canonical" href="https://supertasks-app.vercel.app/vs/todoist/" />
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="https://supertasks-app.vercel.app/favicon.png" />
+  <link rel="apple-touch-icon" href="https://supertasks-app.vercel.app/favicon.png" />
+  <!-- OpenGraph -->
+  <meta property="og:title" content="SuperTasks vs Todoist: Which is right for you? (2026)" />
+  <meta property="og:description" content="Honest comparison of SuperTasks vs Todoist. Pricing, keyboard shortcuts, data privacy, and which task manager is right for Mac users." />
+  <meta property="og:image" content="https://supertasks-app.vercel.app/og.png" />
+  <meta property="og:image:width" content="2238" />
+  <meta property="og:image:height" content="1246" />
+  <meta property="og:url" content="https://supertasks-app.vercel.app/vs/todoist/" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="SuperTasks" />
+  <!-- Twitter / X -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="SuperTasks vs Todoist: Which is right for you? (2026)" />
+  <meta name="twitter:description" content="Honest comparison of SuperTasks vs Todoist. Pricing, keyboard shortcuts, data privacy, and which task manager is right for Mac users." />
+  <meta name="twitter:image" content="https://supertasks-app.vercel.app/og.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0A0A0A; --bg2: #0D0D0D; --surface: #111111;
+    --border: rgba(255,255,255,0.06); --border2: rgba(255,255,255,0.10);
+    --accent: #5B6AFF; --accent-d: #4a57e8; --accent-glow: rgba(91,106,255,0.18);
+    --t1: #F5F5F5; --t2: rgba(245,245,245,0.72); --t3: rgba(245,245,245,0.44); --t4: rgba(245,245,245,0.24);
+    --green: #1DB954; --font: 'Sora', system-ui, sans-serif; --mono: 'JetBrains Mono', 'SF Mono', monospace;
+  }
+  html { scroll-behavior: smooth; }
+  body { font-family: var(--font); background: var(--bg); color: var(--t1); -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+  a { color: inherit; text-decoration: none; }
+  img { display: block; max-width: 100%; }
+
+  /* Nav */
+  nav { position: sticky; top: 0; z-index: 100; height: 60px; display: flex; align-items: center; justify-content: space-between; padding: 0 48px; background: rgba(10,10,10,0.92); backdrop-filter: blur(16px); border-bottom: 1px solid var(--border); }
+  .nav-brand { display: flex; align-items: center; gap: 10px; font-size: 15px; font-weight: 700; letter-spacing: -0.02em; }
+  .nav-icon { width: 26px; height: 26px; border-radius: 7px; background: linear-gradient(135deg, #5B47E0, #8B5CF6); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .nav-back { font-size: 12px; color: var(--t3); display: flex; align-items: center; gap: 6px; transition: color 0.15s; }
+  .nav-back:hover { color: var(--t1); }
+  .nav-dl { font-size: 13px; font-weight: 600; color: #fff; background: var(--accent); padding: 8px 18px; border-radius: 8px; transition: background 0.15s; }
+  .nav-dl:hover { background: var(--accent-d); }
+
+  /* Breadcrumb */
+  .breadcrumb { font-family: var(--mono); font-size: 11px; color: var(--t4); padding: 20px 48px 0; letter-spacing: 0.06em; }
+  .breadcrumb a { color: var(--t4); transition: color 0.15s; }
+  .breadcrumb a:hover { color: var(--t2); }
+  .breadcrumb span { margin: 0 8px; }
+
+  /* Hero */
+  .page-hero { padding: 56px 48px 64px; max-width: 860px; margin: 0 auto; }
+  .page-eyebrow { font-family: var(--mono); font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--accent); display: block; margin-bottom: 16px; }
+  .page-hero h1 { font-size: clamp(32px, 4.5vw, 56px); font-weight: 800; letter-spacing: -0.04em; line-height: 1.06; margin-bottom: 18px; }
+  .page-hero .intro { font-size: 16px; color: var(--t3); line-height: 1.75; max-width: 700px; }
+
+  /* TL;DR */
+  .tldr { background: var(--surface); border: 1px solid var(--border2); border-left: 3px solid var(--accent); border-radius: 10px; padding: 24px 28px; margin: 0 48px 48px; max-width: 800px; margin-left: auto; margin-right: auto; }
+  .tldr-label { font-family: var(--mono); font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent); margin-bottom: 10px; }
+  .tldr p { font-size: 14px; color: var(--t2); line-height: 1.7; }
+
+  /* Sections */
+  .content { max-width: 860px; margin: 0 auto; padding: 0 48px 80px; }
+  .content h2 { font-size: clamp(22px, 3vw, 34px); font-weight: 800; letter-spacing: -0.03em; margin-bottom: 20px; margin-top: 56px; }
+  .content h2:first-child { margin-top: 0; }
+  .content p { font-size: 15px; color: var(--t3); line-height: 1.75; margin-bottom: 16px; }
+  .content p:last-child { margin-bottom: 0; }
+
+  /* Feature list */
+  .feat-list { list-style: none; display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
+  .feat-list li { display: flex; align-items: flex-start; gap: 10px; font-size: 14px; color: var(--t2); line-height: 1.6; }
+  .feat-list li::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); flex-shrink: 0; margin-top: 7px; }
+  .feat-list.weak li::before { background: var(--t4); }
+
+  /* Comparison table */
+  .cmp-wrap { overflow-x: auto; margin: 24px 0; }
+  table.cmp { width: 100%; border-collapse: separate; border-spacing: 0; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; min-width: 480px; }
+  table.cmp th { font-size: 12px; font-weight: 700; padding: 14px 18px; background: var(--surface); color: var(--t3); border-bottom: 1px solid var(--border); text-align: center; letter-spacing: 0.04em; text-transform: uppercase; }
+  table.cmp th:first-child { text-align: left; }
+  table.cmp th.hl { background: rgba(91,106,255,0.1); color: var(--accent); }
+  table.cmp td { font-size: 13px; padding: 12px 18px; text-align: center; color: var(--t3); border-bottom: 1px solid var(--border); background: var(--bg); }
+  table.cmp td:first-child { text-align: left; color: var(--t2); font-weight: 500; }
+  table.cmp td.hl { background: rgba(91,106,255,0.04); }
+  table.cmp tr:last-child td { border-bottom: none; }
+  .chk { color: var(--accent); } .crs { color: var(--t4); } .prt { color: rgba(255,200,80,0.8); }
+
+  /* Who section cards */
+  .who-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin: 20px 0; }
+  .who-card { background: var(--bg); padding: 28px 24px; }
+  .who-card h3 { font-size: 14px; font-weight: 700; letter-spacing: -0.01em; margin-bottom: 14px; }
+  .who-card h3 .badge { font-family: var(--mono); font-size: 10px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; padding: 2px 8px; border-radius: 4px; margin-left: 8px; vertical-align: middle; }
+  .who-card h3 .badge.us { background: rgba(91,106,255,0.15); color: var(--accent); }
+  .who-card h3 .badge.them { background: rgba(255,255,255,0.06); color: var(--t3); }
+
+  /* FAQ */
+  .faq-item { border-bottom: 1px solid var(--border); padding: 20px 0; cursor: pointer; }
+  .faq-item:first-of-type { border-top: 1px solid var(--border); }
+  .faq-q { display: flex; align-items: center; justify-content: space-between; gap: 20px; font-size: 15px; font-weight: 600; user-select: none; }
+  .faq-chevron { color: var(--t4); font-size: 18px; transition: transform 0.2s, color 0.2s; flex-shrink: 0; }
+  .faq-item.open .faq-chevron { transform: rotate(45deg); color: var(--accent); }
+  .faq-a { font-size: 14px; color: var(--t3); line-height: 1.8; max-height: 0; overflow: hidden; transition: max-height 0.3s ease, padding 0.3s ease; }
+  .faq-item.open .faq-a { max-height: 400px; padding-top: 12px; }
+  .faq-a code { font-family: var(--mono); font-size: 12px; background: var(--surface); border: 1px solid var(--border2); border-radius: 4px; padding: 1px 6px; color: var(--t2); }
+
+  /* Alternatives list */
+  .alt-cards { display: flex; flex-direction: column; gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin: 20px 0; }
+  .alt-card { background: var(--bg); padding: 22px 24px; display: grid; grid-template-columns: 1fr auto; align-items: start; gap: 16px; }
+  .alt-card h3 { font-size: 15px; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 6px; }
+  .alt-card p { font-size: 13px; color: var(--t3); line-height: 1.65; }
+  .alt-price { font-family: var(--mono); font-size: 11px; color: var(--t4); white-space: nowrap; padding-top: 3px; }
+  .alt-card.featured { background: rgba(91,106,255,0.04); border-left: 2px solid var(--accent); }
+  .alt-featured-label { font-family: var(--mono); font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent); margin-bottom: 6px; display: block; }
+
+  /* CTA */
+  .cta-block { background: var(--bg2); border: 1px solid var(--border); border-radius: 16px; padding: 48px 40px; text-align: center; margin: 48px 0 0; }
+  .cta-block h2 { font-size: clamp(26px, 3.5vw, 42px); font-weight: 800; letter-spacing: -0.04em; margin-bottom: 12px; }
+  .cta-block p { font-size: 15px; color: var(--t3); margin-bottom: 32px; line-height: 1.65; }
+  .btn-dl { display: inline-flex; align-items: center; gap: 10px; font-size: 15px; font-weight: 700; color: #fff; background: var(--accent); padding: 15px 30px; border-radius: 10px; box-shadow: 0 0 40px rgba(91,106,255,0.25); transition: background 0.15s, transform 0.15s; }
+  .btn-dl:hover { background: var(--accent-d); transform: translateY(-2px); }
+  .cta-meta { font-family: var(--mono); font-size: 11px; color: var(--t4); margin-top: 14px; letter-spacing: 0.06em; }
+
+  /* Footer */
+  footer { border-top: 1px solid var(--border); padding: 48px 48px 40px; }
+  .foot-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 40px; gap: 40px; }
+  .foot-brand { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; color: var(--t3); }
+  .foot-links { display: flex; gap: 56px; }
+  .foot-col h4 { font-family: var(--mono); font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--t4); margin-bottom: 14px; }
+  .foot-col a { display: block; font-size: 13px; color: var(--t3); margin-bottom: 10px; transition: color 0.15s; }
+  .foot-col a:hover { color: var(--t1); }
+  .foot-bottom { display: flex; align-items: center; justify-content: space-between; padding-top: 24px; border-top: 1px solid var(--border); }
+  .foot-right { font-family: var(--mono); font-size: 11px; color: var(--t4); }
+
+  /* Responsive */
+  @media (max-width: 700px) {
+    nav, .breadcrumb { padding: 0 20px; }
+    .breadcrumb { padding-top: 16px; padding-left: 20px; }
+    .page-hero, .content { padding-left: 20px; padding-right: 20px; }
+    .tldr { margin-left: 20px; margin-right: 20px; }
+    .who-grid { grid-template-columns: 1fr; }
+    .alt-card { grid-template-columns: 1fr; }
+    footer { padding: 36px 20px 28px; }
+    .foot-top { flex-direction: column; gap: 32px; }
+    .foot-links { flex-direction: column; gap: 28px; }
+  }
+  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }</style>
+  <script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Is SuperTasks really free compared to Todoist's subscription?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. SuperTasks is completely free with no trial period, no feature limits, and no Pro upgrade. Todoist's free tier caps you at 5 projects and excludes reminders, filters, and labels. SuperTasks includes everything at no cost because your data stays on your Mac — there are no servers to run, so there's nothing to charge for."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Can SuperTasks work offline, unlike Todoist?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "SuperTasks is fully offline with zero network dependency. It works in airplane mode, on a flight, in a basement — everywhere, always. Todoist requires internet for sync and some features break or lag when offline."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Which has better keyboard shortcuts — SuperTasks or Todoist?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "SuperTasks is keyboard-first by design: 22+ shortcuts, Vim-style j/k navigation, g-chord view switching, and a command palette (⌘K) for every action. Todoist has some shortcuts, but the app is fundamentally mouse-driven. If your hands rarely leave the keyboard, you'll feel the difference within minutes."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Where does my data go in SuperTasks vs Todoist?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "In SuperTasks, your data lives in a local SQLite file on your Mac at ~/Library/Application Support/SuperTasks/tasks.db. You own it completely. In Todoist, your tasks are stored on Todoist's cloud servers — you access them via their app, and your data is subject to their terms and availability."
+      }
+    }
+  ]
+}</script>
+</head>
+<body>
+
+<nav>
+  <a href="https://supertasks-app.vercel.app" class="nav-brand">
+    <div class="nav-icon">
+      <svg width="13" height="13" viewBox="0 0 1024 1024" fill="none">
+        <circle cx="310" cy="360" r="44" stroke="white" stroke-width="68" fill="none"/>
+        <polyline points="289,360 306,378 334,344" stroke="white" stroke-width="68" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        <circle cx="310" cy="512" r="44" stroke="white" stroke-width="68" fill="none"/>
+        <polyline points="289,512 306,530 334,496" stroke="white" stroke-width="68" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      </svg>
+    </div>
+    SuperTasks
+  </a>
+  <a href="https://supertasks-app.vercel.app/vs/" class="nav-back">&#8592; All comparisons</a>
+  <a href="https://github.com/thisisalimirza/supertasks/releases/latest/download/Supertasks-arm64.dmg" class="nav-dl">Download Free</a>
+</nav>
+
+<div class="breadcrumb">
+  <a href="https://supertasks-app.vercel.app">SuperTasks</a><span>/</span>
+  <a href="https://supertasks-app.vercel.app/vs/">Compare</a><span>/</span>
+  SuperTasks vs Todoist
+</div>
+
+<div class="page-hero">
+  <span class="page-eyebrow">Compare</span>
+  <h1>SuperTasks vs Todoist</h1>
+  <p class="intro">Todoist and SuperTasks are built on opposite philosophies. Todoist is built for everyone, synced to the cloud, available on every device. SuperTasks is built for Mac keyboard natives who want speed, data privacy, and zero monthly fees. The right choice hinges on two questions: do you need cross-platform access, and are you willing to pay a monthly subscription for it?</p>
+</div>
+
+<div class="tldr">
+  <div class="tldr-label">TL;DR</div>
+  <p>Choose <strong>SuperTasks</strong> if you want a free, keyboard-first Mac task manager with local data and zero subscription. Choose <strong>Todoist</strong> if you need teams needing cross-platform access, people who live on mobile, and those who value deep integrations with other tools.</p>
+</div>
+
+<div class="content">
+
+  <h2>Side-by-side comparison</h2>
+  <div class="cmp-wrap">
+    <table class="cmp">
+      <thead>
+        <tr>
+          <th></th>
+          <th class="hl">SuperTasks</th>
+          <th>Todoist</th>
+        </tr>
+      </thead>
+      <tbody>
+        
+    <tr>
+      <td>Price</td>
+      <td class="hl"><span class="prt"><strong style="color:var(--accent)">$0</strong></span></td>
+      <td>$4–8/user/mo</td>
+    </tr>
+    <tr>
+      <td>No account needed</td>
+      <td class="hl"><span class="chk">✓</span></td>
+      <td><span class="crs">✗</span></td>
+    </tr>
+    <tr>
+      <td>Local storage</td>
+      <td class="hl"><span class="chk">✓</span></td>
+      <td><span class="crs">✗</span></td>
+    </tr>
+    <tr>
+      <td>Keyboard-first</td>
+      <td class="hl"><span class="chk">✓</span></td>
+      <td><span class="crs">✗</span></td>
+    </tr>
+    <tr>
+      <td>Command palette</td>
+      <td class="hl"><span class="chk">✓</span></td>
+      <td><span class="chk">✓</span></td>
+    </tr>
+    <tr>
+      <td>Custom filtered views</td>
+      <td class="hl"><span class="chk">✓</span></td>
+      <td><span class="prt">~</span></td>
+    </tr>
+    <tr>
+      <td>Open data format</td>
+      <td class="hl"><span class="chk">✓</span></td>
+      <td><span class="crs">✗</span></td>
+    </tr>
+    <tr>
+      <td>Works offline</td>
+      <td class="hl"><span class="chk">✓</span></td>
+      <td><span class="crs">✗</span></td>
+    </tr>
+    <tr>
+      <td>Free forever</td>
+      <td class="hl"><span class="chk">✓</span></td>
+      <td><span class="crs">✗</span></td>
+    </tr>
+      </tbody>
+    </table>
+  </div>
+  <p style="font-family:var(--mono);font-size:11px;color:var(--t4);">~ = partial support &nbsp;&middot;&nbsp; Last updated 2026</p>
+
+  <h2>Where SuperTasks wins</h2>
+  <ul class="feat-list">
+    <li>Completely free — no trial, no tier, no upgrade nag</li>
+    <li>No account required — open the app and go</li>
+    <li>All data stored locally in SQLite on your Mac</li>
+    <li>22+ keyboard shortcuts with Vim-style j/k navigation</li>
+    <li>Command palette (⌘K) reaches every action</li>
+  </ul>
+
+  <h2>Where Todoist wins</h2>
+  <ul class="feat-list">
+    <li>Available on every platform — Windows, Android, web, browser extensions</li>
+    <li>Natural language date input ('next Monday', 'every 3 days')</li>
+    <li>Strong integrations ecosystem — Zapier, Slack, Google Calendar and 80+ more</li>
+    <li>Team collaboration with task assignment, comments, and shared projects</li>
+    <li>Excellent, polished mobile app for iOS and Android</li>
+  </ul>
+
+  <h2>Who should choose which</h2>
+  <div class="who-grid">
+    <div class="who-card">
+      <h3>SuperTasks <span class="badge us">Free</span></h3>
+      <ul class="feat-list">
+        <li>You want zero monthly cost — forever</li>
+        <li>You live on the keyboard and want 22+ shortcuts</li>
+        <li>You want your tasks stored on your Mac, not a server</li>
+        <li>You're a solo Mac user who needs speed over features</li>
+      </ul>
+    </div>
+    <div class="who-card">
+      <h3>Todoist <span class="badge them">$4–8/user/mo</span></h3>
+      <ul class="feat-list">
+        <li>Paying $4–8/month for a personal task list</li>
+        <li>Tasks stored on Todoist's servers</li>
+        <li>Vim-style keyboard navigation that Todoist doesn't offer</li>
+        <li>To work fully offline without sync delays or failures</li>
+      </ul>
+    </div>
+  </div>
+
+  <h2>Frequently asked questions</h2>
+  
+  <div class="faq-item">
+    <div class="faq-q">Is SuperTasks really free compared to Todoist's subscription?<span class="faq-chevron">+</span></div>
+    <div class="faq-a">Yes. SuperTasks is completely free with no trial period, no feature limits, and no Pro upgrade. Todoist's free tier caps you at 5 projects and excludes reminders, filters, and labels. SuperTasks includes everything at no cost because your data stays on your Mac — there are no servers to run, so there's nothing to charge for.</div>
+  </div>
+  <div class="faq-item">
+    <div class="faq-q">Can SuperTasks work offline, unlike Todoist?<span class="faq-chevron">+</span></div>
+    <div class="faq-a">SuperTasks is fully offline with zero network dependency. It works in airplane mode, on a flight, in a basement — everywhere, always. Todoist requires internet for sync and some features break or lag when offline.</div>
+  </div>
+  <div class="faq-item">
+    <div class="faq-q">Which has better keyboard shortcuts — SuperTasks or Todoist?<span class="faq-chevron">+</span></div>
+    <div class="faq-a">SuperTasks is keyboard-first by design: 22+ shortcuts, Vim-style j/k navigation, g-chord view switching, and a command palette (⌘K) for every action. Todoist has some shortcuts, but the app is fundamentally mouse-driven. If your hands rarely leave the keyboard, you'll feel the difference within minutes.</div>
+  </div>
+  <div class="faq-item">
+    <div class="faq-q">Where does my data go in SuperTasks vs Todoist?<span class="faq-chevron">+</span></div>
+    <div class="faq-a">In SuperTasks, your data lives in a local SQLite file on your Mac at ~/Library/Application Support/SuperTasks/tasks.db. You own it completely. In Todoist, your tasks are stored on Todoist's cloud servers — you access them via their app, and your data is subject to their terms and availability.</div>
+  </div>
+
+  <p style="margin-top:40px;font-size:13px;color:var(--t4);">Also see: <a href="https://supertasks-app.vercel.app/alternatives/todoist" style="color:var(--accent);">Best Todoist alternatives for Mac →</a></p>
+
+  <div class="cta-block">
+    <h2>Try SuperTasks free</h2>
+    <p>No account. No subscription. No cloud. Your tasks live on your Mac.<br>Download takes seconds — press C and you're moving.</p>
+    <a href="https://github.com/thisisalimirza/supertasks/releases/latest/download/Supertasks-arm64.dmg" class="btn-dl">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+      Download for Mac — Free
+    </a>
+    <p class="cta-meta">macOS 12+ &nbsp;&middot;&nbsp; Apple Silicon &nbsp;&middot;&nbsp; ~25 MB &nbsp;&middot;&nbsp; No account needed</p>
+  </div>
+
+</div>
+
+<footer>
+  <div class="foot-top">
+    <a href="https://supertasks-app.vercel.app" class="foot-brand">
+      <div class="nav-icon" style="width:20px;height:20px;border-radius:5px;">
+        <svg width="10" height="10" viewBox="0 0 1024 1024" fill="none">
+          <circle cx="310" cy="360" r="44" stroke="white" stroke-width="68" fill="none"/>
+          <polyline points="289,360 306,378 334,344" stroke="white" stroke-width="68" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        </svg>
+      </div>
+      SuperTasks
+    </a>
+    <div class="foot-links">
+      <div class="foot-col">
+        <h4><a href="https://supertasks-app.vercel.app/vs/" style="color:inherit;">Compare</a></h4>
+        <a href="https://supertasks-app.vercel.app/vs/todoist">vs Todoist</a>
+        <a href="https://supertasks-app.vercel.app/vs/things-3">vs Things 3</a>
+        <a href="https://supertasks-app.vercel.app/vs/apple-reminders">vs Apple Reminders</a>
+        <a href="https://supertasks-app.vercel.app/vs/omnifocus">vs OmniFocus</a>
+      </div>
+      <div class="foot-col">
+        <h4><a href="https://supertasks-app.vercel.app/alternatives/" style="color:inherit;">Alternatives</a></h4>
+        <a href="https://supertasks-app.vercel.app/alternatives/todoist">Todoist alternatives</a>
+        <a href="https://supertasks-app.vercel.app/alternatives/things-3">Things 3 alternatives</a>
+        <a href="https://supertasks-app.vercel.app/alternatives/apple-reminders">Apple Reminders alternatives</a>
+        <a href="https://supertasks-app.vercel.app/alternatives/omnifocus">OmniFocus alternatives</a>
+      </div>
+    </div>
+  </div>
+  <div class="foot-bottom">
+    <div class="foot-right">Free forever &nbsp;&middot;&nbsp; &copy; 2026 Ali Mirza</div>
+  </div>
+</footer>
+<script>
+  document.querySelectorAll('.faq-item').forEach(function(item) {
+    item.querySelector('.faq-q').addEventListener('click', function() {
+      var wasOpen = item.classList.contains('open');
+      document.querySelectorAll('.faq-item.open').forEach(function(o) { o.classList.remove('open'); });
+      if (!wasOpen) item.classList.add('open');
+    });
+  });
+</script>
+</body>
+</html>

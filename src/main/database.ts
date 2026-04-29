@@ -8,10 +8,11 @@ interface AppData {
   projects: Project[]
   splits: Split[]
   windowState?: { x?: number; y?: number; width: number; height: number }
+  onboardingCompleted: boolean
 }
 
 let dataPath: string
-let data: AppData = { tasks: [], projects: [], splits: [] }
+let data: AppData = { tasks: [], projects: [], splits: [], onboardingCompleted: false }
 
 export function initDatabase() {
   dataPath = path.join(app.getPath('userData'), 'supertasks.json')
@@ -22,12 +23,14 @@ export function initDatabase() {
       data.tasks = data.tasks ?? []
       data.projects = data.projects ?? []
       data.splits = data.splits ?? []
+      // Existing installs pre-date onboarding — treat as already completed
+      data.onboardingCompleted = data.onboardingCompleted ?? true
     } catch {
-      data = { tasks: [], projects: [], splits: [] }
+      data = { tasks: [], projects: [], splits: [], onboardingCompleted: false }
     }
   } else {
-    // First launch on this machine — seed demo data so the app isn't empty
-    seedDemoData()
+    // Fresh install — let the onboarding flow decide whether to seed demo data
+    data = { tasks: [], projects: [], splits: [], onboardingCompleted: false }
     persist()
   }
 }
@@ -79,7 +82,7 @@ function seedDemoData() {
     },
     {
       id: 'demo-3', title: 'Complete a task and use the command palette',
-      notes: 'Press D or Space to mark a task done. It will slide away — check the Done view to find it again.\n\nPress ⌘K to open the command palette and jump anywhere instantly.\n\nPress ⌥Space (Option + Space) from any app to open the Quick Add window and capture a task without switching to SuperTasks.',
+      notes: 'Press D or Space to mark a task done. It will slide away — check the Done view to find it again.\n\nPress ⌘K to open the command palette and jump anywhere instantly.\n\nPress ⌥Space (Option + Space) from any app to open the Quick Add window and capture a task without switching to Supertasks.',
       status: 'inbox', priority: 'none',
       dueDate: null, startDate: null, reminder: null,
       project: '', labels: [], createdAt: now, completedAt: null,
@@ -161,7 +164,7 @@ function seedDemoData() {
     },
     // ── Done (so the Done view isn't empty on first open) ────────────────────
     {
-      id: 'demo-13', title: 'Set up SuperTasks',
+      id: 'demo-13', title: 'Set up Supertasks',
       notes: '', status: 'done', priority: 'none',
       dueDate: null, startDate: null, reminder: null,
       project: '', labels: [], createdAt: now, completedAt: now,
@@ -240,5 +243,14 @@ export const db = {
   setWindowState: (state: AppData['windowState']) => {
     data.windowState = state
     persist()
+  },
+
+  isOnboardingCompleted: (): boolean => data.onboardingCompleted,
+
+  completeOnboarding: (withDemoData: boolean): { tasks: Task[]; projects: Project[]; splits: Split[] } => {
+    if (withDemoData) seedDemoData()
+    data.onboardingCompleted = true
+    persist()
+    return { tasks: data.tasks, projects: data.projects, splits: data.splits }
   },
 }

@@ -5,7 +5,24 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>SuperTasks — Fly through your work. Free forever.</title>
   <meta name="description" content="SuperTasks is a free, keyboard-first task manager for Mac. No subscription, no account, no cloud. Your tasks live in local SQLite. Free forever." />
-  <meta name="theme-color" content="#080c18" />
+  <meta name="theme-color" content="#0A0A0A" />
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="/favicon.png" />
+  <link rel="apple-touch-icon" href="/favicon.png" />
+  <!-- OpenGraph -->
+  <meta property="og:title" content="SuperTasks — Fly through your work. Free forever." />
+  <meta property="og:description" content="Free, keyboard-first task manager for Mac. No account. No subscription. No cloud." />
+  <meta property="og:image" content="https://supertasks-app.vercel.app/og.png" />
+  <meta property="og:image:width" content="2238" />
+  <meta property="og:image:height" content="1246" />
+  <meta property="og:url" content="https://supertasks-app.vercel.app" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="SuperTasks" />
+  <!-- Twitter / X -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="SuperTasks — Fly through your work. Free forever." />
+  <meta name="twitter:description" content="Free, keyboard-first task manager for Mac. No account. No subscription. No cloud." />
+  <meta name="twitter:image" content="https://supertasks-app.vercel.app/og.png" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
@@ -85,8 +102,8 @@
     .hero-trust { font-family: var(--mono); font-size: 10px; color: var(--t4); letter-spacing: 0.1em; text-transform: uppercase; display: flex; align-items: center; gap: 16px; margin-bottom: 72px; flex-wrap: wrap; justify-content: center; }
     .hero-trust-dot { width: 2px; height: 2px; border-radius: 50%; background: var(--t4); }
 
-    .hero-screenshot { width: 100%; max-width: 960px; border-radius: 14px; overflow: hidden; border: 1px solid var(--border2); box-shadow: 0 0 0 1px rgba(255,255,255,0.04), 0 40px 120px rgba(0,0,0,0.7), 0 0 80px rgba(91,106,255,0.06); transition: transform 0.4s cubic-bezier(0.16,1,0.3,1), box-shadow 0.4s; }
-    .hero-screenshot:hover { transform: translateY(-4px) scale(1.002); box-shadow: 0 0 0 1px rgba(255,255,255,0.06), 0 60px 140px rgba(0,0,0,0.7), 0 0 100px rgba(91,106,255,0.10); }
+    .hero-screenshot { width: 100%; max-width: 960px; transition: transform 0.4s cubic-bezier(0.16,1,0.3,1); }
+    .hero-screenshot:hover { transform: translateY(-4px) scale(1.002); }
 
     /* ── Stat break ──────────────────────────────────────────────────────── */
     .stat-break { padding: 120px 48px; text-align: center; background: var(--bg2); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
@@ -121,9 +138,9 @@
     .feat-text-col-inner p { font-size: 15px; color: var(--t3); line-height: 1.75; margin-bottom: 18px; }
     .feat-text-col-inner p:last-child { margin-bottom: 0; }
 
-    .feat-img-col { display: flex; align-items: center; justify-content: center; padding: 60px 40px; background: var(--bg2); border-left: 1px solid var(--border); overflow: hidden; }
-    .feat-row.flip .feat-img-col { border-left: none; border-right: 1px solid var(--border); }
-    .feat-img-col img { border-radius: 10px; border: 1px solid var(--border2); box-shadow: 0 24px 80px rgba(0,0,0,0.6); transition: transform 0.4s cubic-bezier(0.16,1,0.3,1); }
+    .feat-img-col { display: flex; align-items: center; justify-content: center; padding: 60px 40px; overflow: hidden; }
+    .feat-row.flip .feat-img-col { }
+    .feat-img-col img { transition: transform 0.4s cubic-bezier(0.16,1,0.3,1); }
     .feat-img-col img:hover { transform: scale(1.025); }
 
     /* ── Shortcuts ───────────────────────────────────────────────────────── */
@@ -239,9 +256,15 @@
     .big-stat-l { font-family: var(--mono); font-size: 11px; color: var(--t4); letter-spacing: 0.1em; text-transform: uppercase; }
 
     /* ── Footer ──────────────────────────────────────────────────────────── */
-    footer { border-top: 1px solid var(--border); padding: 36px 48px; display: flex; align-items: center; justify-content: space-between; }
+    footer { border-top: 1px solid var(--border); padding: 48px 48px 40px; }
+    .foot-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 40px; gap: 40px; }
     .foot-brand { display: flex; align-items: center; gap: 10px; }
     .foot-name { font-size: 13px; font-weight: 600; color: var(--t3); }
+    .foot-links { display: flex; gap: 56px; }
+    .foot-col h4 { font-family: var(--mono); font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--t4); margin-bottom: 14px; }
+    .foot-col a { display: block; font-size: 13px; color: var(--t3); margin-bottom: 10px; transition: color 0.15s; }
+    .foot-col a:hover { color: var(--t1); }
+    .foot-bottom { display: flex; align-items: center; justify-content: space-between; padding-top: 24px; border-top: 1px solid var(--border); }
     .foot-right { font-family: var(--mono); font-size: 11px; color: var(--t4); }
 
     /* ── Inline CTA ─────────────────────────────────────────────────────────── */
@@ -270,7 +293,7 @@
       .stat-break { padding: 80px 24px; }
       .hero-actions { flex-direction: column; align-items: stretch; } .btn-primary { justify-content: center; }
       .feat-row, .feat-row.flip { grid-template-columns: 1fr; direction: ltr; }
-      .feat-img-col { border-left: none !important; border-right: none !important; border-top: 1px solid var(--border); min-height: 280px; padding: 40px 24px; }
+      .feat-img-col { min-height: 280px; padding: 40px 24px; }
       .feat-text-col { padding: 60px 24px; } .feat-text-col-inner { max-width: 100%; }
       .builtfor-grid { grid-template-columns: 1fr; }
       .founder-note { padding: 0 24px; margin-bottom: 56px; }
@@ -335,13 +358,13 @@
   </div>
   <div class="hero-trust r d4">
     <span>macOS 12+</span><span class="hero-trust-dot"></span>
-    <span>Intel &amp; Apple Silicon</span><span class="hero-trust-dot"></span>
+    <span>Apple Silicon (M1–M4)</span><span class="hero-trust-dot"></span>
     <span>~25 MB</span><span class="hero-trust-dot"></span>
     <span>v1.0.0</span>
   </div>
   <!-- Task list + detail pane — shows the product actually working -->
   <div class="r d5" style="width:100%;max-width:960px;">
-    <img src="./SCR-20260401-bdmm.png" alt="SuperTasks — Today view with task detail panel open" class="hero-screenshot" loading="eager" />
+    <img src="./676_1x_shots_so.png" alt="SuperTasks — Today view with task detail panel open" class="hero-screenshot" loading="eager" />
   </div>
 </section>
 
@@ -396,7 +419,7 @@
     </div>
   </div>
   <div class="feat-img-col">
-    <img src="./SCR-20260401-bdjb.png" alt="SuperTasks command palette showing navigation and view options" class="r d2" loading="lazy" />
+    <img src="./904shots_so.png" alt="SuperTasks command palette showing navigation and view options" class="r d2" loading="lazy" />
   </div>
 </div>
 
@@ -412,7 +435,7 @@
     </div>
   </div>
   <div class="feat-img-col">
-    <img src="./SCR-20260401-bdmm.png" alt="SuperTasks task detail panel with notes, priority, and due date" class="r d2" loading="lazy" />
+    <img src="./324shots_so.png" alt="SuperTasks task detail panel with notes, priority, and due date" class="r d2" loading="lazy" />
   </div>
 </div>
 
@@ -428,8 +451,17 @@
     </div>
   </div>
   <div class="feat-img-col">
-    <img src="./SCR-20260401-bdbd.jpeg" alt="SuperTasks inbox zero screen showing a mountain landscape" class="r d2" loading="lazy" />
+    <img src="./27shots_so.png" alt="SuperTasks inbox zero screen showing a mountain landscape" class="r d2" loading="lazy" />
   </div>
+</div>
+
+<!-- ── Inline mid-page CTA ───────────────────────────────────────────────── -->
+<div class="inline-cta r">
+  <a href="#download" class="btn-primary" id="midDlBtn">
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+    Download for Mac &mdash; Free
+  </a>
+  <p class="inline-cta-note">No account &nbsp;&middot;&nbsp; No email &nbsp;&middot;&nbsp; Works in seconds</p>
 </div>
 
 <!-- ── Stat break ────────────────────────────────────────────────────────── -->
@@ -691,8 +723,7 @@
       </a>
       <div class="dl-meta">
         <span>macOS 12+</span>
-        <span>Intel &amp; Apple Silicon</span>
-        <span>v1.0.0</span>
+        <span>Apple Silicon (M1–M4)</span>
         <span>~25 MB</span>
         <span>No account needed</span>
       </div>
@@ -701,13 +732,13 @@
       <div class="step">
         <span class="step-num">01</span>
         <h4>Download</h4>
-        <p>Click above. The .dmg downloads in seconds.</p>
+        <p>Click above. The .dmg opens in seconds.</p>
       </div>
       <span class="step-arrow" aria-hidden="true">&#8594;</span>
       <div class="step">
         <span class="step-num">02</span>
         <h4>Install</h4>
-        <p>Drag SuperTasks to Applications.</p>
+        <p>Drag to Applications. First launch: right-click &rarr; Open.</p>
       </div>
       <span class="step-arrow" aria-hidden="true">&#8594;</span>
       <div class="step">
@@ -735,20 +766,40 @@
 
 <!-- ── Footer ─────────────────────────────────────────────────────────────── -->
 <footer>
-  <div class="foot-brand">
-    <div class="nav-icon" style="width:22px;height:22px;border-radius:6px;">
-      <svg width="11" height="11" viewBox="0 0 1024 1024" fill="none" aria-hidden="true">
-        <circle cx="310" cy="360" r="44" stroke="white" stroke-width="68" fill="none"/>
-        <polyline points="289,360 306,378 334,344" stroke="white" stroke-width="68" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-        <circle cx="310" cy="512" r="44" stroke="white" stroke-width="68" fill="none"/>
-        <polyline points="289,512 306,530 334,496" stroke="white" stroke-width="68" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-        <circle cx="310" cy="664" r="44" stroke="rgba(255,255,255,0.4)" stroke-width="68" fill="none"/>
-        <polygon points="590,620 558,672 582,672 550,724 614,660 588,660" fill="rgba(255,255,255,0.6)"/>
-      </svg>
+  <div class="foot-top">
+    <div class="foot-brand">
+      <div class="nav-icon" style="width:22px;height:22px;border-radius:6px;">
+        <svg width="11" height="11" viewBox="0 0 1024 1024" fill="none" aria-hidden="true">
+          <circle cx="310" cy="360" r="44" stroke="white" stroke-width="68" fill="none"/>
+          <polyline points="289,360 306,378 334,344" stroke="white" stroke-width="68" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+          <circle cx="310" cy="512" r="44" stroke="white" stroke-width="68" fill="none"/>
+          <polyline points="289,512 306,530 334,496" stroke="white" stroke-width="68" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+          <circle cx="310" cy="664" r="44" stroke="rgba(255,255,255,0.4)" stroke-width="68" fill="none"/>
+          <polygon points="590,620 558,672 582,672 550,724 614,660 588,660" fill="rgba(255,255,255,0.6)"/>
+        </svg>
+      </div>
+      <span class="foot-name">SuperTasks</span>
     </div>
-    <span class="foot-name">SuperTasks</span>
+    <div class="foot-links">
+      <div class="foot-col">
+        <h4><a href="/vs/" style="color:inherit;">Compare</a></h4>
+        <a href="/vs/todoist">vs Todoist</a>
+        <a href="/vs/things-3">vs Things 3</a>
+        <a href="/vs/apple-reminders">vs Apple Reminders</a>
+        <a href="/vs/omnifocus">vs OmniFocus</a>
+      </div>
+      <div class="foot-col">
+        <h4><a href="/alternatives/" style="color:inherit;">Alternatives</a></h4>
+        <a href="/alternatives/todoist">Todoist alternatives</a>
+        <a href="/alternatives/things-3">Things 3 alternatives</a>
+        <a href="/alternatives/apple-reminders">Apple Reminders alternatives</a>
+        <a href="/alternatives/omnifocus">OmniFocus alternatives</a>
+      </div>
+    </div>
   </div>
-  <div class="foot-right">Built with &#9825; for Mac &nbsp;&middot;&nbsp; &copy; 2026 Ali Mirza</div>
+  <div class="foot-bottom">
+    <div class="foot-right">Built with &#9825; for Mac &nbsp;&middot;&nbsp; &copy; 2026 Ali Mirza</div>
+  </div>
 </footer>
 
 <script>
@@ -775,7 +826,7 @@
   // ── Download buttons ────────────────────────────────────────────────────
   // Replace '#' with your actual .dmg URL, e.g.:
   // 'https://github.com/yourusername/supertasks/releases/latest/download/SuperTasks.dmg'
-  var DMG_URL = '#';
+  var DMG_URL = 'https://github.com/thisisalimirza/supertasks/releases/latest/download/Supertasks-arm64.dmg';
 
   function handleDownload(e) {
     e.preventDefault();
@@ -787,7 +838,7 @@
     }
   }
 
-  ['dlBtn', 'heroDlBtn', 'pricingDlBtn'].forEach(function(id) {
+  ['dlBtn', 'heroDlBtn', 'pricingDlBtn', 'midDlBtn'].forEach(function(id) {
     var el = document.getElementById(id);
     if (el) el.addEventListener('click', handleDownload);
   });

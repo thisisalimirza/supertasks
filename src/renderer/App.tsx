@@ -12,10 +12,12 @@ import StatusBar from './components/StatusBar'
 import TitleBar from './components/TitleBar'
 import SettingsPanel from './components/SettingsPanel'
 import NewProjectDialog from './components/NewProjectDialog'
+import OnboardingFlow from './components/OnboardingFlow'
 
 export default function App() {
   const loadTasks = useTaskStore(s => s.loadTasks)
   const setActiveView = useTaskStore(s => s.setView)
+  const onboardingCompleted = useTaskStore(s => s.onboardingCompleted)
   const isDetailOpen = useTaskStore(s => s.isDetailOpen)
   const isCommandPaletteOpen = useTaskStore(s => s.isCommandPaletteOpen)
   const isShortcutCheatsheetOpen = useTaskStore(s => s.isShortcutCheatsheetOpen)
@@ -87,6 +89,9 @@ export default function App() {
       {isSplitEditorOpen && <SplitEditorPopover />}
       {isNewProjectOpen && <NewProjectDialog />}
       <ToastStack />
+
+      {/* First-launch onboarding — shown until user completes it */}
+      {!onboardingCompleted && <OnboardingFlow />}
     </div>
   )
 }

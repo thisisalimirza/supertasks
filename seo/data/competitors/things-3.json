@@ -1,0 +1,77 @@
+{
+  "name": "Things 3",
+  "slug": "things-3",
+  "tagline": "Award-winning personal task manager",
+  "price_free": null,
+  "price_paid": "$49.99 Mac (one-time)",
+  "requires_account": false,
+  "local_storage": true,
+  "keyboard_first": false,
+  "command_palette": false,
+  "custom_views": "partial",
+  "open_data": false,
+  "offline": true,
+  "platforms": ["Mac", "iPhone", "iPad"],
+  "team_features": false,
+  "strengths": [
+    "Exceptionally polished, beautiful Mac-native design",
+    "One-time purchase — no ongoing subscription",
+    "Local data by default — no cloud account required for Mac",
+    "Excellent UX with thoughtful interaction design",
+    "Natural language date input and repeating tasks",
+    "Markdown support in notes"
+  ],
+  "weaknesses": [
+    "$49.99 upfront cost for the Mac app alone",
+    "No Windows version, no web app",
+    "Limited keyboard shortcuts — designed for mouse and trackpad",
+    "No command palette for quick actions",
+    "Custom views are limited compared to split views with filter rules",
+    "No open data format — you can't script or query your task database"
+  ],
+  "best_for": "Mac users who value a beautiful, polished experience and are happy to pay once for well-crafted software",
+  "not_for": "Users who need extensive keyboard shortcuts, free software, or the ability to query and script their task data",
+  "switch_reasons": [
+    "Don't want to spend $49.99 on a task manager",
+    "Want Vim-style keyboard navigation and a command palette",
+    "Need custom filtered views (split views) beyond Things 3's Areas/Projects structure",
+    "Want to script or query your task data with SQL"
+  ],
+  "vs_intro": "Things 3 and SuperTasks are both local-first Mac task managers — and that's where the similarities end. Things 3 is a premium, beautifully crafted app that costs $49.99. SuperTasks is free, built around keyboard speed, and gives you direct access to your data. If you're choosing between them, the core question is: do you want a polished experience you pay for once, or a keyboard-native tool that costs nothing?",
+  "alternatives_intro": "People look for Things 3 alternatives for a few reasons: the upfront $49.99 cost is a barrier, the keyboard shortcuts don't go deep enough for power users, or they need custom filtered views that go beyond Areas and Projects. Here are the best alternatives worth considering.",
+  "other_alternatives": [
+    {
+      "name": "OmniFocus",
+      "price": "$49.99/yr or $99.99/yr Pro",
+      "note": "The most powerful Mac task manager for GTD practitioners. Custom perspectives, AppleScript support, local data. Significantly more expensive and complex than Things 3."
+    },
+    {
+      "name": "Todoist",
+      "price": "Free / $4–8/mo",
+      "note": "Cross-platform with a lower barrier to entry. Cloud-synced and requires a subscription for full features. Better mobile app than Things 3, but loses the local-data advantage."
+    },
+    {
+      "name": "Notion",
+      "price": "Free / $8–15/mo",
+      "note": "Flexible workspace that can be configured as a task manager. Much more setup required, and far heavier than a dedicated task app. Better for project management than daily task capture."
+    }
+  ],
+  "faq": [
+    {
+      "q": "Is SuperTasks a good free alternative to Things 3?",
+      "a": "SuperTasks is the strongest free alternative to Things 3 on Mac. Both store data locally and work offline. The difference: SuperTasks has 22+ keyboard shortcuts and a command palette where Things 3 is more mouse-oriented, and SuperTasks costs nothing where Things 3 is $49.99 upfront."
+    },
+    {
+      "q": "Does SuperTasks have a command palette like Things 3?",
+      "a": "Yes — SuperTasks has a full command palette (⌘K) that reaches every view, task, and action in the app. Things 3 has Quick Find for searching but lacks a command palette for firing actions without a mouse."
+    },
+    {
+      "q": "How does SuperTasks compare to Things 3 for keyboard users?",
+      "a": "SuperTasks is purpose-built for keyboard navigation. It has Vim-style j/k movement, g-chord view switching (G+I for Inbox, G+T for Today, etc.), single-key task actions (C to create, D to complete, R for due date), and ⌘K for everything else. Things 3 has some keyboard shortcuts but is fundamentally a trackpad-first app."
+    },
+    {
+      "q": "Can you access your task data in SuperTasks like Things 3?",
+      "a": "SuperTasks stores all data in a local SQLite file at ~/Library/Application Support/SuperTasks/tasks.db — you can open it with any SQLite browser, write SQL queries, or build scripts on top of it. Things 3 uses a proprietary database format that isn't directly accessible."
+    }
+  ]
+}

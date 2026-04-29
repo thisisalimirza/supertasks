@@ -148,6 +148,10 @@ interface TaskStore {
   reorderTask: (id: string, dir: 1 | -1) => Promise<void>
   moveTaskToPosition: (sourceId: string, targetId: string) => Promise<void>
 
+  // Onboarding
+  onboardingCompleted: boolean
+  completeOnboarding: (withDemoData: boolean) => Promise<void>
+
   // Settings
   isSettingsOpen: boolean
   settingsSection: string | null
@@ -202,6 +206,7 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
   isProjectNavOpen: false, isSplitEditorOpen: false, editingSplitId: null, splitEditorIntent: 'split' as const,
   isNewProjectOpen: false, isSettingsOpen: false, settingsSection: null,
   isCreating: false, editingTaskId: null, completingTaskId: null,
+  onboardingCompleted: false,
   theme: (localStorage.getItem('supertasks-theme') as 'dark' | 'light') ?? 'light',
   commandPaletteGroupHeaders: localStorage.getItem('supertasks-cmd-headers') === 'true',
   activePicker: null, pickerTaskId: null,
@@ -209,17 +214,18 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
   undoStack: [], toasts: [],
 
   loadTasks: async () => {
-    const [tasks, projects, splits] = await Promise.all([
+    const [tasks, projects, splits, onboardingCompleted] = await Promise.all([
       window.api.tasks.getAll(),
       window.api.projects.getAll(),
       window.api.splits.getAll(),
+      window.api.onboarding.getStatus(),
     ])
     // ── Backfill: assign sortOrder to tasks that predate the field ──
     // Use createdAt timestamp so natural order is preserved
     const backfilled = tasks.map(t =>
       t.sortOrder != null ? t : { ...t, sortOrder: new Date(t.createdAt).getTime() }
     )
-    set({ tasks: backfilled, projects, splits })
+    set({ tasks: backfilled, projects, splits, onboardingCompleted })
 
     // ── Backfill: create splits for any project that doesn't have one yet ──
     // Covers tasks that had projects assigned before this feature existed.
@@ -351,6 +357,14 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
     )
 
     set({ selectedIndex: insertAt })
+  },
+
+  completeOnboarding: async (withDemoData) => {
+    const { tasks, projects, splits } = await window.api.onboarding.complete(withDemoData)
+    const backfilled = tasks.map(t =>
+      t.sortOrder != null ? t : { ...t, sortOrder: new Date(t.createdAt).getTime() }
+    )
+    set({ tasks: backfilled, projects, splits, onboardingCompleted: true })
   },
 
   setSettingsOpen: (v) => set({ isSettingsOpen: v, settingsSection: v ? null : null }),

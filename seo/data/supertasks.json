@@ -1,0 +1,36 @@
+{
+  "name": "SuperTasks",
+  "slug": "supertasks",
+  "tagline": "Fly through your tasks. Every action, one key.",
+  "site_url": "https://supertasks-app.vercel.app",
+  "download_url": "https://github.com/thisisalimirza/supertasks/releases/latest/download/Supertasks-arm64.dmg",
+  "price_display": "$0",
+  "price_model": "free",
+  "requires_account": false,
+  "local_storage": true,
+  "keyboard_first": true,
+  "command_palette": true,
+  "custom_views": true,
+  "open_data": true,
+  "offline": true,
+  "mac_only": true,
+  "platforms": ["Mac"],
+  "shortcut_count": "22+",
+  "strengths": [
+    "Completely free — no trial, no tier, no upgrade nag",
+    "No account required — open the app and go",
+    "All data stored locally in SQLite on your Mac",
+    "22+ keyboard shortcuts with Vim-style j/k navigation",
+    "Command palette (⌘K) reaches every action",
+    "Split views with custom AND/OR filter rules",
+    "Fully offline — zero network dependency",
+    "Inbox Zero reward screen — full-screen landscape photo",
+    "Open data format — your SQLite file is yours to read and script"
+  ],
+  "limitations": [
+    "Mac only — no Windows or web app",
+    "No iOS sync yet (on the roadmap)",
+    "No team collaboration",
+    "No natural language date input"
+  ]
+}

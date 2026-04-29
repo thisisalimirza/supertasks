@@ -1,0 +1,74 @@
+{
+  "name": "Apple Reminders",
+  "slug": "apple-reminders",
+  "tagline": "Built into every Apple device",
+  "price_free": "Free (included with macOS)",
+  "price_paid": null,
+  "requires_account": false,
+  "local_storage": false,
+  "keyboard_first": false,
+  "command_palette": false,
+  "custom_views": "partial",
+  "open_data": false,
+  "offline": true,
+  "platforms": ["Mac", "iPhone", "iPad", "Apple Watch"],
+  "team_features": false,
+  "strengths": [
+    "Completely free and built into every Mac, iPhone, and iPad",
+    "Siri integration for hands-free task capture",
+    "Native sync across all Apple devices via iCloud",
+    "No setup required — it's already on your Mac",
+    "Apple Watch support for quick glances",
+    "Location-based reminders ('remind me when I get home')"
+  ],
+  "weaknesses": [
+    "No keyboard shortcuts beyond basic Mac conventions",
+    "No command palette or keyboard-driven navigation",
+    "Limited filtering and custom view options",
+    "Designed for simple reminder use cases, not serious task management",
+    "No priority levels beyond flagging",
+    "No 'hold until' / snooze to a future date",
+    "No notes with auto-save per task"
+  ],
+  "best_for": "Light users who need basic reminders across Apple devices and value the zero-setup, zero-cost, Siri-integrated experience",
+  "not_for": "Power users managing a serious task list who need keyboard shortcuts, custom views, priority levels, and quick-capture without a mouse",
+  "switch_reasons": [
+    "Apple Reminders is too basic for a real task management workflow",
+    "Need keyboard shortcuts and a command palette",
+    "Want priority levels, hold-until dates, and project organization",
+    "Frustrated by the lack of custom filtered views"
+  ],
+  "vs_intro": "Apple Reminders and SuperTasks are both free Mac apps — but they serve completely different needs. Reminders is designed for casual 'don't forget to pick up milk' use cases with Siri integration. SuperTasks is built for people who manage a serious daily task list and want to do it entirely from the keyboard. If you've outgrown Reminders, SuperTasks is the natural next step.",
+  "alternatives_intro": "Most people looking for Apple Reminders alternatives have simply outgrown it. Reminders is excellent at what it does — quick Siri capture, device sync — but it hits a ceiling fast for anyone managing more than a handful of tasks. Here are the best upgrades.",
+  "other_alternatives": [
+    {
+      "name": "Todoist",
+      "price": "Free / $4–8/mo",
+      "note": "The most popular upgrade path from Reminders. Cross-platform, natural language dates, and a much stronger feature set. Requires an account and a subscription for full functionality."
+    },
+    {
+      "name": "Things 3",
+      "price": "$49.99 one-time",
+      "note": "A polished, local-first Mac task manager that feels like a natural Apple-quality upgrade from Reminders. $49.99 upfront, Mac/iPhone/iPad only, no cloud account required."
+    },
+    {
+      "name": "TickTick",
+      "price": "Free / $2.99/mo",
+      "note": "A solid middle ground between Reminders and a full task manager. Cross-platform, better free tier than Todoist, and includes a built-in calendar view. Cloud-based."
+    }
+  ],
+  "faq": [
+    {
+      "q": "What can SuperTasks do that Apple Reminders can't?",
+      "a": "SuperTasks adds 22+ keyboard shortcuts, Vim-style navigation, a command palette (⌘K) for every action, four priority levels, hold-until dates (snooze a task to a future date), split views with custom AND/OR filters, project organization, and an undo stack. It's a serious task management tool rather than a reminder app."
+    },
+    {
+      "q": "Does SuperTasks sync with iPhone like Apple Reminders?",
+      "a": "Not yet — iOS sync is on the roadmap. Right now SuperTasks is Mac-only. If cross-device sync is essential to your workflow today, Todoist or Things 3 are better fits. If you primarily work on your Mac and can wait for iOS sync, SuperTasks is worth using now."
+    },
+    {
+      "q": "Is SuperTasks harder to set up than Apple Reminders?",
+      "a": "No — you download the .dmg, drag to Applications, and press C to add your first task. No account creation, no setup wizard, no onboarding email. It's as frictionless as Reminders, just significantly more capable."
+    }
+  ]
+}

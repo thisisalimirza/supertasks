@@ -1,0 +1,73 @@
+{
+  "name": "OmniFocus",
+  "slug": "omnifocus",
+  "tagline": "Powerful task management for serious GTD practitioners",
+  "price_free": null,
+  "price_paid": "$49.99/yr Standard or $99.99/yr Pro",
+  "requires_account": false,
+  "local_storage": true,
+  "keyboard_first": false,
+  "command_palette": false,
+  "custom_views": true,
+  "open_data": false,
+  "offline": true,
+  "platforms": ["Mac", "iPhone", "iPad", "Apple Watch"],
+  "team_features": false,
+  "strengths": [
+    "Extremely powerful — custom perspectives, complex filters, review workflow",
+    "Deep GTD (Getting Things Done) methodology support",
+    "Local data by default — Omni Sync optional",
+    "AppleScript and Shortcuts automation support",
+    "Mature, stable software with 15+ years of development",
+    "Defer dates, sequential and parallel projects, repeat logic"
+  ],
+  "weaknesses": [
+    "$49.99–99.99/year subscription — one of the most expensive task managers",
+    "Steep learning curve — significant time investment to get value",
+    "Heavy and complex for users who don't need GTD power",
+    "No command palette for quick keyboard-driven navigation",
+    "Interface feels dated compared to newer apps",
+    "Overkill for most task management use cases"
+  ],
+  "best_for": "GTD practitioners managing large, complex project portfolios who need advanced perspectives, automation, and are willing to invest time in the system",
+  "not_for": "Users who want a fast, lightweight daily task manager without the cognitive overhead of a full GTD system",
+  "switch_reasons": [
+    "OmniFocus feels too heavy and complex for a daily task list",
+    "Don't want to pay $50–100/year for a personal task manager",
+    "Want a command palette and faster keyboard navigation",
+    "Looking for something simpler that gets out of the way"
+  ],
+  "vs_intro": "OmniFocus and SuperTasks occupy opposite ends of the Mac task manager spectrum. OmniFocus is one of the most powerful productivity systems ever built — $100/year, a full GTD framework, custom perspectives, and AppleScript automation. SuperTasks is free, simple, and built for keyboard speed. If you're comparing them, you're probably either discovering you need less than OmniFocus offers, or you're evaluating whether the cost and complexity are worth it.",
+  "alternatives_intro": "People look for OmniFocus alternatives for a consistent reason: it's too complex and too expensive for what they actually need. OmniFocus is genuinely powerful, but most task managers don't need custom perspectives and AppleScript hooks. If you want a simpler, faster workflow, these alternatives are worth a look.",
+  "other_alternatives": [
+    {
+      "name": "Things 3",
+      "price": "$49.99 one-time",
+      "note": "The most natural OmniFocus alternative — still local, still Mac-native, but dramatically simpler. Loses the custom perspectives and automation power. One-time cost with no subscription."
+    },
+    {
+      "name": "Todoist",
+      "price": "Free / $4–8/mo",
+      "note": "Cross-platform and much simpler than OmniFocus. Loses the GTD depth and local storage but wins on ease of use and mobile experience. Lower subscription cost."
+    },
+    {
+      "name": "Notion",
+      "price": "Free / $8–15/mo",
+      "note": "A flexible workspace that can replicate some OmniFocus workflows. Requires significant setup and is much heavier. Better for project management than quick daily task capture."
+    }
+  ],
+  "faq": [
+    {
+      "q": "Is SuperTasks a good alternative to OmniFocus for everyday tasks?",
+      "a": "Yes — if you're using OmniFocus primarily as a daily task list rather than a full GTD system, SuperTasks replaces it well. You get local storage, keyboard-first navigation, command palette, priority levels, and hold-until dates. What you give up: custom perspectives, sequential project logic, review workflow, and AppleScript. For a simple daily driver, that's a good trade plus you save $50–100/year."
+    },
+    {
+      "q": "Does SuperTasks have custom views like OmniFocus perspectives?",
+      "a": "SuperTasks has Split Views — custom tabs with AND/OR filter rules based on priority, project, label, and date. They're not as deep as OmniFocus perspectives (no sequential/parallel logic, no review workflow), but they cover most daily-use cases without the configuration overhead."
+    },
+    {
+      "q": "Can SuperTasks handle the same data locally as OmniFocus?",
+      "a": "Both apps store data locally on your Mac. OmniFocus uses a proprietary database format. SuperTasks uses standard SQLite — you can open it with DB Browser, run SQL queries, or build automation scripts directly. If data portability matters, SuperTasks is actually more open."
+    }
+  ]
+}

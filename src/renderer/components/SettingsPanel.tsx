@@ -317,6 +317,12 @@ export default function SettingsPanel() {
   const [activeSection, setActiveSection] = useState<Section | null>(null)
   const [focusedRootIndex, setFocusedRootIndex] = useState(0)
 
+  const openShortcuts = useCallback(() => {
+    store.setSettingsOpen(false)
+    // Small delay so settings slides out before cheatsheet appears
+    setTimeout(() => store.setShortcutCheatsheetOpen(true), 150)
+  }, [store])
+
   // Reset to root when panel closes
   useEffect(() => {
     if (!isOpen) {
@@ -419,11 +425,24 @@ export default function SettingsPanel() {
           {/* Content */}
           {!activeSection ? (
             <div className="flex flex-col flex-1 min-h-0">
-              <RootMenu
+                  <RootMenu
                 onEnter={enterSection}
                 focusedIndex={focusedRootIndex}
                 setFocusedIndex={setFocusedRootIndex}
               />
+              <div className="border-t border-[var(--c-b1)] py-1">
+                <button
+                  onClick={openShortcuts}
+                  className="no-drag w-full flex items-center justify-between px-6 py-3 text-left hover:bg-[var(--c-hover)] transition-colors group"
+                >
+                  <span className="text-sm text-[var(--c-t4)] group-hover:text-[var(--c-t2)] transition-colors">
+                    Keyboard shortcuts
+                  </span>
+                  <kbd className="text-[10px] text-[var(--c-t7)] font-mono bg-[var(--c-btn)] border border-[var(--c-b3)] px-1.5 py-0.5 rounded">
+                    ⌘/
+                  </kbd>
+                </button>
+              </div>
             </div>
           ) : (
             <div className="flex flex-col flex-1 min-h-0">
