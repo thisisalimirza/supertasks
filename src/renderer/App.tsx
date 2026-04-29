@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useTaskStore } from './store/taskStore'
 import { useKeyboard } from './hooks/useKeyboard'
 import TaskList from './components/TaskList'
@@ -13,11 +13,13 @@ import TitleBar from './components/TitleBar'
 import SettingsPanel from './components/SettingsPanel'
 import NewProjectDialog from './components/NewProjectDialog'
 import OnboardingFlow from './components/OnboardingFlow'
+import WhatsNew from './components/WhatsNew'
 
 export default function App() {
   const loadTasks = useTaskStore(s => s.loadTasks)
   const setActiveView = useTaskStore(s => s.setView)
   const onboardingCompleted = useTaskStore(s => s.onboardingCompleted)
+  const [whatsNewVersion, setWhatsNewVersion] = useState<string | null>(null)
   const isDetailOpen = useTaskStore(s => s.isDetailOpen)
   const isCommandPaletteOpen = useTaskStore(s => s.isCommandPaletteOpen)
   const isShortcutCheatsheetOpen = useTaskStore(s => s.isShortcutCheatsheetOpen)
@@ -39,6 +41,18 @@ export default function App() {
     document.documentElement.setAttribute('data-theme', theme)
     loadTasks()
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Show "What's New" when the app version has changed since last launch.
+  // Only shown to existing users (onboardingCompleted) — new users get onboarding instead.
+  useEffect(() => {
+    if (!onboardingCompleted) return
+    window.api?.window?.getVersion?.().then(version => {
+      const seen = localStorage.getItem('supertasks-seen-version')
+      if (seen !== version) {
+        setWhatsNewVersion(version)
+      }
+    })
+  }, [onboardingCompleted]) // eslint-disable-line react-hooks/exhaustive-deps
 
   // Refresh store when quick-add creates a task, then jump to the view it landed in
   // (inbox = no due date, today = has due date) so it's immediately visible.
@@ -92,6 +106,17 @@ export default function App() {
 
       {/* First-launch onboarding — shown until user completes it */}
       {!onboardingCompleted && <OnboardingFlow />}
+
+      {/* What's New — shown once per version to existing users */}
+      {whatsNewVersion && onboardingCompleted && (
+        <WhatsNew
+          version={whatsNewVersion}
+          onDismiss={() => {
+            localStorage.setItem('supertasks-seen-version', whatsNewVersion)
+            setWhatsNewVersion(null)
+          }}
+        />
+      )}
     </div>
   )
 }

@@ -27,6 +27,7 @@ declare global {
         minimize: () => void
         maximize: () => void
         close: () => void
+        getVersion: () => Promise<string>
       }
       onTasksChanged: (fn: (view?: string) => void) => () => void
       onEscape: (fn: () => void) => () => void

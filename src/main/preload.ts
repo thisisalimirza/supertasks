@@ -31,6 +31,7 @@ const api = {
     minimize: () => ipcRenderer.invoke('window:minimize'),
     maximize: () => ipcRenderer.invoke('window:maximize'),
     close: () => ipcRenderer.invoke('window:close'),
+    getVersion: (): Promise<string> => ipcRenderer.invoke('app:getVersion'),
   },
   // Notified when a task is created from another window (e.g. quick-add).
   // The optional `view` arg tells the main window which view to navigate to.
