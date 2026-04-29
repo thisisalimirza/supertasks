@@ -148,6 +148,10 @@ interface TaskStore {
   reorderTask: (id: string, dir: 1 | -1) => Promise<void>
   moveTaskToPosition: (sourceId: string, targetId: string) => Promise<void>
 
+  // Show-completed toggle (project / split views only)
+  showCompletedInView: boolean
+  setShowCompletedInView: (v: boolean) => void
+
   // Onboarding
   onboardingCompleted: boolean
   completeOnboarding: (withDemoData: boolean) => Promise<void>
@@ -206,6 +210,7 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
   isProjectNavOpen: false, isSplitEditorOpen: false, editingSplitId: null, splitEditorIntent: 'split' as const,
   isNewProjectOpen: false, isSettingsOpen: false, settingsSection: null,
   isCreating: false, editingTaskId: null, completingTaskId: null,
+  showCompletedInView: false,
   onboardingCompleted: false,
   theme: (localStorage.getItem('supertasks-theme') as 'dark' | 'light') ?? 'light',
   commandPaletteGroupHeaders: localStorage.getItem('supertasks-cmd-headers') === 'true',
@@ -358,6 +363,8 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
 
     set({ selectedIndex: insertAt })
   },
+
+  setShowCompletedInView: (v) => set({ showCompletedInView: v }),
 
   completeOnboarding: async (withDemoData) => {
     const { tasks, projects, splits } = await window.api.onboarding.complete(withDemoData)
@@ -515,7 +522,7 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
   closeDetail: () => set({ isDetailOpen: false }),
 
   setView: (view) => {
-    set({ activeView: view, activeSplitId: null, selectedIndex: 0, isDetailOpen: false, selectedTaskIds: new Set(), activePicker: null, pickerTaskId: null })
+    set({ activeView: view, activeSplitId: null, selectedIndex: 0, isDetailOpen: false, selectedTaskIds: new Set(), activePicker: null, pickerTaskId: null, showCompletedInView: false })
     const tasks = get().getVisibleTasks()
     set({ selectedTaskId: tasks[0]?.id ?? null })
   },
@@ -672,7 +679,7 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
   },
 
   setActiveSplit: (id) => {
-    set({ activeView: 'split', activeSplitId: id, selectedIndex: 0, isDetailOpen: false, selectedTaskIds: new Set(), activePicker: null, pickerTaskId: null })
+    set({ activeView: 'split', activeSplitId: id, selectedIndex: 0, isDetailOpen: false, selectedTaskIds: new Set(), activePicker: null, pickerTaskId: null, showCompletedInView: false })
     const tasks = get().getVisibleTasks()
     set({ selectedTaskId: tasks[0]?.id ?? null })
   },
@@ -715,19 +722,13 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
 
   // ── Computed ───────────────────────────────────────────────────────────────
   getVisibleTasks: () => {
-    const { tasks, activeView, activeSplitId, selectedProject, splits } = get()
+    const { tasks, activeView, activeSplitId, selectedProject, splits, showCompletedInView } = get()
 
     switch (activeView) {
       case 'inbox':
         return tasks
           .filter(t => t.status === 'inbox' && !hasUpcomingStart(t) && !t.dueDate)
-          .sort((a, b) => {
-            const pOrder: Record<string, number> = { urgent: 5, high: 4, medium: 3, low: 2, none: 1 }
-            const pDiff = (pOrder[b.priority] ?? 0) - (pOrder[a.priority] ?? 0)
-            if (pDiff !== 0) return pDiff
-            if (a.starred !== b.starred) return a.starred ? -1 : 1
-            return (b.sortOrder ?? 0) - (a.sortOrder ?? 0)
-          })
+          .sort((a, b) => (b.sortOrder ?? 0) - (a.sortOrder ?? 0))
 
       case 'today':
         return tasks
@@ -784,18 +785,18 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
 
       case 'project':
         return tasks
-          .filter(t => t.project === selectedProject && t.status !== 'archived')
-          .sort((a, b) => {
-            const pOrder: Record<string, number> = { urgent: 5, high: 4, medium: 3, low: 2, none: 1 }
-            const pDiff = (pOrder[b.priority] ?? 0) - (pOrder[a.priority] ?? 0)
-            if (pDiff !== 0) return pDiff
-            return (b.sortOrder ?? 0) - (a.sortOrder ?? 0)
-          })
+          .filter(t =>
+            t.project === selectedProject &&
+            t.status !== 'archived' &&
+            (showCompletedInView ? true : t.status !== 'done')
+          )
+          .sort((a, b) => (b.sortOrder ?? 0) - (a.sortOrder ?? 0))
 
       case 'split': {
         const split = splits.find(s => s.id === activeSplitId)
         if (!split) return []
         return applySplitFilter(tasks, split)
+          .filter(t => showCompletedInView ? true : t.status !== 'done')
           .sort((a, b) => (b.sortOrder ?? 0) - (a.sortOrder ?? 0))
       }
 

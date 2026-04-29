@@ -241,6 +241,19 @@ export default function TaskList() {
             {store.selectedTaskIds.size > 0 && (
               <span className="ml-2 text-[var(--c-accent)]">· {store.selectedTaskIds.size} selected</span>
             )}
+            {/* Show completed toggle — project and split views only */}
+            {(store.activeView === 'project' || store.activeView === 'split') && (
+              <button
+                onClick={() => store.setShowCompletedInView(!store.showCompletedInView)}
+                className={`no-drag ml-2 transition-colors ${
+                  isEmpty
+                    ? store.showCompletedInView ? 'text-white/60' : 'text-white/25 hover:text-white/50'
+                    : store.showCompletedInView ? 'text-[var(--c-t5)]' : 'text-[var(--c-t8)] hover:text-[var(--c-t5)]'
+                }`}
+              >
+                · {store.showCompletedInView ? 'hide completed' : 'show completed'}
+              </button>
+            )}
           </p>
         </div>
 

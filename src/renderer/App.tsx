@@ -69,8 +69,8 @@ export default function App() {
         <div
           className="flex-1 overflow-hidden"
           style={{
-            marginLeft: isSettingsOpen ? '300px' : '0',
-            marginRight: isDetailOpen ? '420px' : '0',
+            marginLeft: isSettingsOpen ? 'min(300px, 60%)' : '0',
+            marginRight: isDetailOpen ? 'min(420px, 60%)' : '0',
           }}
         >
           <TaskList />
