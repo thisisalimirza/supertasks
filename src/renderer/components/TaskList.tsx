@@ -174,11 +174,7 @@ export default function TaskList() {
     ? store.splits.find(s => s.id === store.activeSplitId) ?? null
     : null
 
-  const heading = activeSplit
-    ? activeSplit.name
-    : store.activeView === 'project' && store.selectedProject
-      ? store.selectedProject
-      : VIEW_HEADINGS[store.activeView] ?? store.activeView
+
 
   const handleSplitContextMenu = (e: React.MouseEvent, splitId: string) => {
     e.preventDefault()
@@ -226,23 +222,106 @@ export default function TaskList() {
       {/* View header — floats over photo when empty */}
       <div className="shrink-0 relative z-10 px-6 pt-5 pb-3">
 
-        {/* Title row */}
-        <h1 className={`text-xl font-semibold tracking-tight flex items-center gap-2 transition-colors duration-300 ${
-          isEmpty ? 'text-white/90' : 'text-[var(--c-t1)]'
-        }`}>
-          {(store.activeView === 'project' || (store.activeView === 'split' && !activeSplit)) && (
-            <span className={isEmpty ? 'text-white/50' : 'text-[var(--c-t6)]'}>◈</span>
+        {/* Combined heading + nav row — active view name IS the heading, siblings are inline */}
+        <div ref={tabBarRef} className="flex items-baseline flex-wrap gap-x-2 gap-y-1.5 mb-1">
+
+          {/* Project view heading (not a built-in or split) */}
+          {store.activeView === 'project' && (
+            <span className={`text-xl font-semibold tracking-tight ${isEmpty ? 'text-white/90' : 'text-[var(--c-t1)]'}`}>
+              <span className={`mr-1 ${isEmpty ? 'text-white/50' : 'text-[var(--c-t6)]'}`}>◈</span>
+              {store.selectedProject}
+            </span>
           )}
-          {heading}
-        </h1>
-        <p className={`text-xs mt-0.5 mb-3 font-mono transition-colors duration-300 ${
-          isEmpty ? 'text-white/40' : 'text-[var(--c-t8)]'
-        }`}>
+
+          {/* Built-in views — active one is big + bold, others are small sibling links */}
+          {BUILTIN_VIEWS.map(view => {
+            const isActive = store.activeView === view
+            return isActive ? (
+              <span
+                key={view}
+                className={`text-xl font-semibold tracking-tight ${isEmpty ? 'text-white/90' : 'text-[var(--c-t1)]'}`}
+              >
+                {VIEW_HEADINGS[view]}
+              </span>
+            ) : (
+              <button
+                key={view}
+                onClick={() => store.setView(view)}
+                className={`no-drag text-sm font-medium transition-colors ${
+                  isEmpty ? 'text-white/40 hover:text-white/75' : 'text-[var(--c-t6)] hover:text-[var(--c-t2)]'
+                }`}
+              >
+                {VIEW_HEADINGS[view]}
+              </button>
+            )
+          })}
+
+          {/* Divider between built-ins and splits */}
+          {enabledSplits.length > 0 && (
+            <div className={`w-px h-4 mx-0.5 self-center shrink-0 ${isEmpty ? 'bg-white/20' : 'bg-[var(--c-b3)]'}`} />
+          )}
+
+          {/* Split tabs — active is big + bold, others are small sibling links */}
+          {enabledSplits.map(split => {
+            const count = store.getSplitTaskCount(split.id)
+            const isActive = store.activeView === 'split' && store.activeSplitId === split.id
+            const splitColor = split.rules.projects.length === 1
+              ? getProjectColor(split.rules.projects[0], store.projects)
+              : null
+            return isActive ? (
+              <span
+                key={split.id}
+                data-active-split="true"
+                className={`flex items-center gap-1.5 text-xl font-semibold tracking-tight ${isEmpty ? 'text-white/90' : 'text-[var(--c-t1)]'}`}
+              >
+                {splitColor && <span className="w-2 h-2 rounded-full shrink-0 opacity-80" style={{ backgroundColor: splitColor }} />}
+                {split.name}
+                {count > 0 && (
+                  <span className={`text-sm font-normal tabular-nums ${isEmpty ? 'text-white/40' : 'text-[var(--c-t6)]'}`}>
+                    {count}
+                  </span>
+                )}
+              </span>
+            ) : (
+              <button
+                key={split.id}
+                onClick={() => store.setActiveSplit(split.id)}
+                onContextMenu={e => handleSplitContextMenu(e, split.id)}
+                className={`no-drag flex items-center gap-1 text-sm font-medium transition-colors ${
+                  isEmpty ? 'text-white/40 hover:text-white/75' : 'text-[var(--c-t6)] hover:text-[var(--c-t2)]'
+                }`}
+              >
+                {splitColor && <span className="w-1.5 h-1.5 rounded-full shrink-0 opacity-70" style={{ backgroundColor: splitColor }} />}
+                {split.name}
+                {count > 0 && (
+                  <span className={`text-xs font-mono tabular-nums ml-0.5 ${isEmpty ? 'text-white/30' : 'text-[var(--c-t7)]'}`}>
+                    {count}
+                  </span>
+                )}
+              </button>
+            )
+          })}
+
+          {/* Add split button */}
+          <button
+            onClick={() => store.setSplitEditorOpen(true, null)}
+            className={`no-drag self-center ml-0.5 w-5 h-5 flex items-center justify-center rounded transition-colors text-sm ${
+              isEmpty
+                ? 'text-white/35 hover:text-white/70 hover:bg-white/10'
+                : 'text-[var(--c-t7)] hover:text-[var(--c-t3)] hover:bg-[var(--c-btn)]'
+            }`}
+            title="New Split View"
+          >
+            +
+          </button>
+        </div>
+
+        {/* Task count + completed toggle */}
+        <p className={`text-xs font-mono transition-colors duration-300 ${isEmpty ? 'text-white/40' : 'text-[var(--c-t8)]'}`}>
           {tasks.length} {tasks.length === 1 ? 'task' : 'tasks'}
           {store.selectedTaskIds.size > 0 && (
             <span className="ml-2 text-[var(--c-accent)]">· {store.selectedTaskIds.size} selected</span>
           )}
-          {/* Show completed toggle — project and split views only */}
           {(store.activeView === 'project' || store.activeView === 'split') && (
             <button
               onClick={() => store.setShowCompletedInView(!store.showCompletedInView)}
@@ -256,80 +335,6 @@ export default function TaskList() {
             </button>
           )}
         </p>
-
-        {/* Tab bar — full width, wraps to new lines when needed, no scrolling */}
-        <div ref={tabBarRef} className="flex items-center flex-wrap gap-1">
-          {/* Built-in tabs */}
-          {BUILTIN_VIEWS.map(view => (
-            <button
-              key={view}
-              onClick={() => store.setView(view)}
-              className={`no-drag px-3 py-1 rounded text-xs font-medium transition-colors ${
-                isEmpty
-                  ? store.activeView === view
-                    ? 'bg-white/20 text-white'
-                    : 'text-white/50 hover:text-white/80 hover:bg-white/10'
-                  : store.activeView === view
-                    ? 'bg-[var(--c-btn)] text-[var(--c-t1)]'
-                    : 'text-[var(--c-t6)] hover:text-[var(--c-t4)]'
-              }`}
-            >
-              {VIEW_HEADINGS[view]}
-            </button>
-          ))}
-
-          {/* Divider — only on the first line, between built-ins and splits */}
-          {enabledSplits.length > 0 && (
-            <div className={`w-px h-4 mx-1 self-center ${isEmpty ? 'bg-white/20' : 'bg-[var(--c-b3)]'}`} />
-          )}
-
-          {/* Split tabs — no container, no overflow, wraps naturally */}
-          {enabledSplits.map(split => {
-            const count = store.getSplitTaskCount(split.id)
-            const isActive = store.activeView === 'split' && store.activeSplitId === split.id
-            const splitColor = split.rules.projects.length === 1
-              ? getProjectColor(split.rules.projects[0], store.projects)
-              : null
-            return (
-              <button
-                key={split.id}
-                data-active-split={isActive ? 'true' : undefined}
-                onClick={() => store.setActiveSplit(split.id)}
-                onContextMenu={e => handleSplitContextMenu(e, split.id)}
-                className={`no-drag flex items-center gap-1.5 px-3 py-1 rounded text-xs font-medium transition-colors ${
-                  isEmpty
-                    ? isActive ? 'bg-white/20 text-white' : 'text-white/50 hover:text-white/80 hover:bg-white/10'
-                    : isActive ? 'bg-[var(--c-btn)] text-[var(--c-t1)]' : 'text-[var(--c-t6)] hover:text-[var(--c-t4)]'
-                }`}
-              >
-                {splitColor && (
-                  <span className="w-1.5 h-1.5 rounded-full shrink-0 opacity-80" style={{ backgroundColor: splitColor }} />
-                )}
-                <span>{split.name}</span>
-                {count > 0 && (
-                  <span className={`text-[9px] font-mono tabular-nums ${
-                    isEmpty ? 'text-white/40' : isActive ? 'text-[var(--c-accent)]' : 'text-[var(--c-t7)]'
-                  }`}>
-                    {count}
-                  </span>
-                )}
-              </button>
-            )
-          })}
-
-          {/* Add split button */}
-          <button
-            onClick={() => store.setSplitEditorOpen(true, null)}
-            className={`no-drag ml-0.5 w-6 h-6 flex items-center justify-center rounded transition-colors text-sm ${
-              isEmpty
-                ? 'text-white/40 hover:text-white/70 hover:bg-white/10'
-                : 'text-[var(--c-t7)] hover:text-[var(--c-t3)] hover:bg-[var(--c-btn)]'
-            }`}
-            title="New Split View"
-          >
-            +
-          </button>
-        </div>
       </div>
 
       {/* Inline creator */}
