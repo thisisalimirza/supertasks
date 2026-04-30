@@ -227,27 +227,19 @@ export default function TaskList() {
 
           {/* Project view heading (not a built-in or split) */}
           {store.activeView === 'project' && (
-            <span className={`tracking-tight ${
-              isEmpty
-                ? 'text-sm font-medium text-white/90'
-                : 'text-xl font-semibold text-[var(--c-t1)]'
-            }`}>
+            <span className={`text-sm font-semibold ${isEmpty ? 'text-white/90' : 'text-[var(--c-t1)]'}`}>
               <span className={`mr-1 ${isEmpty ? 'text-white/50' : 'text-[var(--c-t6)]'}`}>◈</span>
               {store.selectedProject}
             </span>
           )}
 
-          {/* Built-in views — active one is big + bold (when non-empty), others are small sibling links */}
+          {/* Built-in views — active one is bold, same size as siblings */}
           {BUILTIN_VIEWS.map(view => {
             const isActive = store.activeView === view
             return isActive ? (
               <span
                 key={view}
-                className={`tracking-tight ${
-                  isEmpty
-                    ? 'text-sm font-medium text-white/90'
-                    : 'text-xl font-semibold text-[var(--c-t1)]'
-                }`}
+                className={`text-sm font-semibold ${isEmpty ? 'text-white/90' : 'text-[var(--c-t1)]'}`}
               >
                 {VIEW_HEADINGS[view]}
               </span>
@@ -269,7 +261,7 @@ export default function TaskList() {
             <div className={`w-px h-4 mx-0.5 self-center shrink-0 ${isEmpty ? 'bg-white/20' : 'bg-[var(--c-b3)]'}`} />
           )}
 
-          {/* Split tabs — active is big + bold, others are small sibling links */}
+          {/* Split tabs — active is bold, same size as siblings */}
           {enabledSplits.map(split => {
             const count = store.getSplitTaskCount(split.id)
             const isActive = store.activeView === 'split' && store.activeSplitId === split.id
@@ -280,16 +272,12 @@ export default function TaskList() {
               <span
                 key={split.id}
                 data-active-split="true"
-                className={`flex items-center gap-2 tracking-tight ${
-                  isEmpty
-                    ? 'text-sm font-medium text-white/90'
-                    : 'text-xl font-semibold text-[var(--c-t1)]'
-                }`}
+                className={`flex items-center gap-2 text-sm font-semibold ${isEmpty ? 'text-white/90' : 'text-[var(--c-t1)]'}`}
               >
                 {splitColor && <span className="w-2 h-2 rounded-full shrink-0 opacity-80" style={{ backgroundColor: splitColor }} />}
                 {split.name}
                 {count > 0 && (
-                  <span className={`text-xs font-mono tabular-nums px-1.5 py-0.5 rounded-full self-center ${
+                  <span className={`text-[10px] font-mono tabular-nums px-1.5 py-0.5 rounded-full self-center ${
                     isEmpty ? 'bg-white/15 text-white/60' : 'bg-[var(--c-btn)] text-[var(--c-t5)]'
                   }`}>
                     {count}

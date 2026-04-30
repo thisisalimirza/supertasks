@@ -1,6 +1,6 @@
 {
   "name": "supertasks",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Superhuman-inspired keyboard-first task manager",
   "main": "dist/main/main.js",
   "scripts": {
